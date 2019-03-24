@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="home.css">
+    <script src="home.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <title>Home</title>
+</head>
+<body>
+    <h1>Activity Tracker</h1>
+    <button onclick="getDayForm()">Add New Day</button>
+    <button onclick="getDateInputView()">View History</button>
+    <button onclick="getDateInputEdit()">Edit Day</button>
+    <div id="table-div">
+        <table id="day-input" border=1>
+            <tr>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Poductive</th>
+                <th>Activity Type</th>
+                <th>Notes</th>
+            </tr>
+            <tr id="table-row">
+                <td>
+                    <input type="time" id="start-time">
+                </td>
+                <td>
+                    <input type="time" id="end-time">
+                </td>
+                <td>
+                    <input type="radio" name="productive" id="productive" value="true">True<br>
+                    <input type="radio" name="productive" id="productive" value="false">False
+                </td>
+                <td>
+                    <select id="activity-type">
+                        <option value='' selected disabled hidden>--Choose Activity Type--</option>
+                    </select>
+                </td>
+                <td>
+                    <textarea id="notes" rows="4" cols="75" placeholder="--Optional--"></textarea>
+                </td>
+            </tr>
+        </table>
+        <button onclick="submitDay()">Submit</button>
+    </div>
+    <div id="time-period-selection">
+            <input type="radio" name="time_period" onclick="clearTimeInput()" value="MostRecentDay">Most Recent Day<br>
+            <input type="radio" name="time_period" onclick="day()" value="day">Selected Day<br>
+            <input type="radio" name="time_period" onclick="week()" value="week">Past Week<br>
+            <input type="radio" name="time_period" onclick="month()" value="month">Past Month<br>
+            <input type="radio" name="time_period" onclick="custom()" value="custom">Custom Time Period<br>
+            <div id="time-input"></div>
+            <button>Submit</button>
+    </div>
+</body>
+</html>

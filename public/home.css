@@ -1,0 +1,7 @@
+div {
+    visibility: hidden;
+}
+
+#time-period-selection, #table-div {
+    position: absolute;
+}

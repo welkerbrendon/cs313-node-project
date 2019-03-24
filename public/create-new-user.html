@@ -5,32 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="padding.css">
+    <script src="create-new-user.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <title>Create Account</title>
 </head>
 <body>
     <div>
         <h1>Fill in the following information to create a new account.</h1>
-        <form action="/create-user" method="POST">
-            <table>
-                <tr>
-                    <td>First Name:</td>
-                    <td><input type="text" placeholder="First Name" name="first"></td>
-                </tr>
-                <tr>
-                    <td>Last Name:</td>
-                    <td><input type="text" placeholder="Last Name" name="last"></td>
-                </tr>
-                <tr>
-                    <td>Username:</td>
-                    <td><input type="text" placeholder="Username" name="username"></td>
-                </tr>
-                <tr>
-                    <td>Password:</td>
-                    <td><input type="password" placeholder="Password" name="password"></td>
-                </tr>
-            </table>
-            <input type="submit" value="Create">
-        </form>
+        <div id="error"></div>
+        <table>
+            <tr>
+                <td>First Name:</td>
+                <td><input type="text" placeholder="First Name" id="first"></td>
+            </tr>
+            <tr>
+                <td>Last Name:</td>
+                <td><input type="text" placeholder="Last Name" id="last"></td>
+            </tr>
+            <tr>
+                <td>Username:</td>
+                <td><input type="text" placeholder="Username" id="username"></td>
+            </tr>
+            <tr>
+                <td>Password:</td>
+                <td><input type="password" placeholder="Password" id="password"></td>
+            </tr>
+        </table>
+        <button onclick="createUser()">Create</button>
     </div>
 </body>
 </html>

@@ -23,6 +23,9 @@ app.post("/create-user", accountController.createUser);
 app.post("/log-in", accountController.logInUser);
 app.post("/add-day", activitiesController.postDay);
 
+app.get("/", function (request, response) {
+    response.redirect("/home.html");
+});
 app.get("/activity-types", activitiesController.getActivityTypes);
 app.get("/logged-in-status", accountController.checkIfLoggedIn);
 app.get("/most-recent-day", activitiesController.getMostRecentDay);

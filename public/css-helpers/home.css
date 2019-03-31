@@ -5,3 +5,7 @@ div {
 #time-period-selection, #table-div {
     position: absolute;
 }
+
+#date-error, #input-error {
+    color: red;
+}

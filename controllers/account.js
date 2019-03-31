@@ -43,12 +43,25 @@ function logInUser(request, response) {
             response.json({message: "Invalid username and/or password."});
         }
         else {
+            request.session.user = {username: username, firstName: result.first, lastName: result.last, id: result.id}; 
             response.json({redirect: "home.html"});
         }
     });
 }
 
+function checkIfLoggedIn(request, response) {
+    console.log("Checking if user is logged in.");
+
+    if(request.session.user) {
+        response.json({loggedIn: true});
+    }
+    else {
+        response.json({redirect: "log-in.html"});
+    }
+}
+
 module.exports = {
     createUser: createUser,
-    logInUser: logInUser
+    logInUser: logInUser,
+    checkIfLoggedIn: checkIfLoggedIn
 }

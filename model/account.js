@@ -36,7 +36,7 @@ function addUser(username, password, firstName, lastName, callback) {
 }
 
 function getUser(username, password, callback){
-    var sql = "SELECT first_name, last_name, account_password " +
+    var sql = "SELECT first_name, last_name, id, account_password " +
                 "FROM user_info " +
                 `WHERE username='${username}'`;
     console.log(`QUERY = ${sql}`);
@@ -57,6 +57,7 @@ function getUser(username, password, callback){
                             const jsonResponse = {
                                 first: result.rows[0].first_name,
                                 last: result.rows[0].last_name,
+                                id: result.rows[0].id,
                                 failed: false
                             };
                             console.log(`JSON: ${jsonResponse}`);

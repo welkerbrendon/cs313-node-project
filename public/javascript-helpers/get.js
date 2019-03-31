@@ -1,16 +1,53 @@
-function getDayForm() {
-    resetDivs();
-    resetTable();
+window.onload = setUp;
+
+var activityTypes = null;
+var globalTableHeaders = null;
+var globalTableRow = null;
+
+function setUp() {
+    getLoggedInStatus();
+    getActivityTypes();
+    setGlobalTableRow();
+    setGlobalTableHeaders();
+}
+
+//server side
+function getLoggedInStatus() {
+    $.get("/logged-in-status", function (result, textStatus) {
+        console.log(JSON.stringify(result));
+        if(result.redirect) {
+            window.location.href = result.redirect;
+        }
+    });
+}
+
+function getActivityTypes() {
     $.get("/activity-types", function(result, textStatus) {
         console.log(JSON.stringify(result));
+        activityTypes = result;
+    });
+}
 
+//client side
+function setGlobalTableHeaders() {
+    globalTableHeaders = document.getElementById("table-headers").cloneNode(true);
+}
+
+function setGlobalTableRow() {
+    globalTableRow = document.getElementById("table-row").cloneNode(true);
+}
+
+function getDayForm() {
+    resetDivs();
+
+    if (document.getElementById("day-input").childNodes.length <= 3) {
         var activity_type = document.getElementById("activity-type");
 
-        for(var i = 0; i < result["length"]; i++) {
-            var textElement = document.createTextNode(result[i].type_name);
+        for(var i = 0; i < activityTypes.length; i++) {
+            var textElement = document.createTextNode(activityTypes[i].type_name);
             var newOption = document.createElement("option");
 
-            newOption.setAttribute("value", textElement);
+            newOption.setAttribute("value", activityTypes[i].id);
             newOption.appendChild(textElement);
 
             activity_type.appendChild(newOption);
@@ -18,22 +55,19 @@ function getDayForm() {
 
         var table = document.getElementById("day-input");
 
-        if (table.childElementCount == 1) {
-            for (var i = 0; i < 6; i++) {
-                var tableRow = document.getElementById("table-row").cloneNode(true);
-                table.appendChild(tableRow);
-            }
+        var productiveName = "";
+        for (var i = 0; i < 6; i++) {
+            var tableRow = document.getElementById("table-row").cloneNode(true);
+            var productiveTrue = tableRow.childNodes[5].childNodes[1];
+            var productiveFalse = tableRow.childNodes[5].childNodes[5];
+            productiveName = "productive" + (i + 1).toString();
+            productiveTrue.setAttribute("name", productiveName);
+            productiveFalse.setAttribute("name", productiveName);
+            table.appendChild(tableRow);
         }
-
-        document.getElementById("table-div").style.visibility="visible";
-    });
-}
-
-function resetTable() {
-    var table = document.getElementById("day-input");
-    while (table.childElementCount > 1) {
-        table.removeChild(table.lastChild);
     }
+
+    document.getElementById("table-div").style.visibility="visible";
 }
 
 function resetDivs() {
@@ -149,4 +183,29 @@ function clearTimeInput(){
     while (div.firstChild) {
         div.removeChild(div.firstChild);
     }    
+}
+
+function addRow() {
+    var table = document.getElementById("day-input");
+    table.appendChild(globalTableRow.cloneNode(true));
+}
+
+function deleteRow() {
+    var table = document.getElementById("day-input");
+    if(table.childNodes.length > 3) {
+        table.removeChild(table.lastChild);
+    }
+}
+
+function clearTable() {
+    var table = document.getElementById("day-input");
+
+    while(table.childNodes.length > 1) {
+        table.removeChild(table.lastChild);
+    }
+
+    table.appendChild(globalTableHeaders.cloneNode(true));
+    table.appendChild(globalTableRow.cloneNode(true));
+
+    getDayForm();
 }

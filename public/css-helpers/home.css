@@ -9,3 +9,8 @@ div {
 #date-error, #input-error {
     color: red;
 }
+
+#results-table {
+    table-layout: fixed;
+    width: 40%;
+}

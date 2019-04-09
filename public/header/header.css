@@ -1,0 +1,32 @@
+.navbar {
+    visibility: visible;
+    background-color: lightskyblue;
+    overflow: hidden;
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+img.navbar {
+    width: 62px;
+    height: 62px;
+}
+
+button.navbar {
+    float: right;
+    font-size: 120%;
+    background-color: inherit;
+    padding: 20px 30px;
+    background-color: inherit;
+    border: none;
+    outline: none;
+}
+
+a.navbar {
+    color: black;
+    text-decoration: none;
+}
+
+a.logo {
+    padding-left: 30px;
+    padding-top: 2px;
+}

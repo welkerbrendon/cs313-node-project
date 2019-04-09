@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="./css-helpers/padding.css">
-    <script src="./javascript-helpers/create-new-user.js"></script>
+
+    <link rel="stylesheet" href="css-helpers/error-message.css">
+    <link rel="stylesheet" href="css-helpers/padding.css">
+    <link rel="stylesheet" href="header/header.css">
+
+    <script src="javascript-helpers/create-new-user.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <title>Create Account</title>
 </head>
 <body>
-    <div>
+    <div class="navbar">
+        <a class="logo" href="../home.html"><img class="navbar" src="header/BMW-Emblem.jpg"></a>
+        <button class="navbar"><a class="navbar" href="log-in.html">Sign In</a></button>
+    </div>
+    <div class="body">
         <h1>Fill in the following information to create a new account.</h1>
-        <div id="error"></div>
+        <p id="error"></p>
         <table>
             <tr>
                 <td>First Name:</td>
@@ -31,7 +40,8 @@
                 <td><input type="password" placeholder="Password" id="password"></td>
             </tr>
         </table>
-        <button onclick="createUser()">Create</button>
+        <p><button onclick="createUser()">Create</button></p>
+        <p><a href="log-in.html"><button>Log In</button></a></p>
     </div>
 </body>
 </html>

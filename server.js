@@ -21,7 +21,10 @@ app.use(session({secret: "lksjdlfkop9792743"}));
 
 app.post("/create-user", accountController.createUser);
 app.post("/log-in", accountController.logInUser);
+app.post("/sign-out", accountController.signOut);
 app.post("/add-day", activitiesController.postDay);
+app.post("/edit-day", activitiesController.editDay);
+
 
 app.get("/", function (request, response) {
     response.redirect("/home.html");

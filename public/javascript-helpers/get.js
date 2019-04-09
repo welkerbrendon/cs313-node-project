@@ -41,17 +41,7 @@ function getDayForm() {
     resetDivs();
 
     if (document.getElementById("day-input").childNodes.length <= 3) {
-        var activity_type = document.getElementById("activity-type");
-
-        for(var i = 0; i < activityTypes.length; i++) {
-            var textElement = document.createTextNode(activityTypes[i].type_name);
-            var newOption = document.createElement("option");
-
-            newOption.setAttribute("value", activityTypes[i].id);
-            newOption.appendChild(textElement);
-
-            activity_type.appendChild(newOption);
-        }
+        addActivityTypes(document.getElementById("activity-type"));
 
         var table = document.getElementById("day-input");
 
@@ -89,9 +79,11 @@ function getDateInputEdit() {
     console.log("date input edit");
 
     resetDivs();
+
+    document.getElementById("edit").style.visibility = "visible";
 }
 
-function day() {
+function day(id) {
     var label = createLabelForDateElement();
 
     var textElement = document.createTextNode("Day to view: ");
@@ -99,7 +91,7 @@ function day() {
 
     clearTimeInput();
 
-    appendLabelAndDateToDiv(label, createInputDateElement());
+    appendLabelAndDateToDiv(label, createInputDateElement(), id);
 }
 
 function week() {
@@ -110,7 +102,7 @@ function week() {
 
     clearTimeInput();
 
-    appendLabelAndDateToDiv(label, createInputDateElement());
+    appendLabelAndDateToDiv(label, createInputDateElement(), "time-input");
 }
 
 function month() {
@@ -126,7 +118,7 @@ function month() {
 
     clearTimeInput();
 
-    appendLabelAndDateToDiv(label, month);
+    appendLabelAndDateToDiv(label, month, "time-input");
 }
 
 function custom() {
@@ -150,13 +142,16 @@ function custom() {
 
     clearTimeInput();
 
-    appendLabelAndDateToDiv(labelStartDate, startDate);
+    appendLabelAndDateToDiv(labelStartDate, startDate, "time-input");
     document.getElementById("time-input").appendChild(document.createElement("br"));
-    appendLabelAndDateToDiv(labelEndDate, endDate);
+    appendLabelAndDateToDiv(labelEndDate, endDate, "time-input");
 }
 
-function appendLabelAndDateToDiv(label, date) {
-    var div = document.getElementById("time-input");
+function appendLabelAndDateToDiv(label, date, id) {
+    var div = document.getElementById(id);
+    if (id != "time-input") {
+        div.appendChild(document.createElement("br"));
+    }
     div.appendChild(label);
     div.appendChild(date);
 
@@ -185,20 +180,44 @@ function clearTimeInput(){
     }    
 }
 
-function addRow() {
-    var table = document.getElementById("day-input");
-    table.appendChild(globalTableRow.cloneNode(true));
+function addRow(id) {
+    var table = document.getElementById(id);
+
+    var newRow = globalTableRow.cloneNode(true);
+    newRow.setAttribute("class", "new-row");
+
+    productiveTrue = newRow.children[2].children[0];
+    productiveFalse = newRow.children[2].children[2];
+    var newName = Math.random().toString();
+    productiveTrue.setAttribute("name", newName);
+    productiveFalse.setAttribute("name", newName);
+
+    for (var i = 0; i < newRow.children.length; i++) {
+        try {
+            var id = newRow.children[i].getAttribute("id");
+            if (id == "activity-type-column") {
+                addActivityTypes(newRow.children[i].children[0]);
+            }
+        } catch (error) {
+            
+        }
+    }
+
+    table.appendChild(newRow);
 }
 
-function deleteRow() {
-    var table = document.getElementById("day-input");
-    if(table.childNodes.length > 3) {
+function deleteRow(id, minRows) {
+    var table = document.getElementById(id);
+    if (table.childNodes.length > 1 + minRows) {
         table.removeChild(table.lastChild);
+    }
+    else if (table.childNodes.length > 3) {
+
     }
 }
 
-function clearTable() {
-    var table = document.getElementById("day-input");
+function clearTable(id) {
+    var table = document.getElementById(id);
 
     while(table.childNodes.length > 1) {
         table.removeChild(table.lastChild);
@@ -208,4 +227,16 @@ function clearTable() {
     table.appendChild(globalTableRow.cloneNode(true));
 
     getDayForm();
+}
+
+function addActivityTypes(activityTypeElement) {
+    for(var i = 0; i < activityTypes.length; i++) {
+        var textElement = document.createTextNode(activityTypes[i].type_name);
+        var newOption = document.createElement("option");
+
+        newOption.setAttribute("value", activityTypes[i].id);
+        newOption.appendChild(textElement);
+
+        activity_type.appendChild(newOption);
+    }
 }

@@ -33,12 +33,12 @@ function postDayOfActivities(requestJSON, userID, callback) {
             callback("Day already exists.", null);
         }
         else {
-            addDays(requestJSON.activities, userID, dayID, callback);
+            addActivities(requestJSON.activities, userID, dayID, callback);
         }
     });
 }
 
-function addDays(activities, userID, dayID, callback) {
+function addActivities(activities, userID, dayID, callback) {
     console.log(`addDays called with: activities=${JSON.stringify(activities)}`);
     
     if (activities.length <= 0) {
@@ -51,7 +51,7 @@ function addDays(activities, userID, dayID, callback) {
 
         var new_uuid = uuidv1();
         var activitySQL = `INSERT INTO activity (id, user_id, day_id, activity_type_id, start_time, end_time, productive, notes, last_updated, created_at)
-                           VALUES ('${new_uuid}', '${userID}', '${dayID}', '${activityData.activityType}', '${activityData.startTime}', '${activityData.endTime}', '${activityData.productive}', '${activityData.notes}', now(), now())`;
+                           VALUES ('${new_uuid}', '${userID}', '${dayID}', '${activityData.type_id}', '${activityData.start_time}', '${activityData.end_time}', '${activityData.productive}', '${activityData.notes}', now(), now())`;
         
         console.log(`activitySQL: ${activitySQL}`);
         pool.query(activitySQL, function(err, result) {
@@ -61,7 +61,7 @@ function addDays(activities, userID, dayID, callback) {
             }
             else {
                 console.log("Calling self");
-                addDays(activities, userID, dayID, callback);
+                addActivities(activities, userID, dayID, callback);
             }
         });
     }
@@ -69,7 +69,7 @@ function addDays(activities, userID, dayID, callback) {
 
 function getDay(date, userID, callback) {
     console.log(`Received request to get date. Date: ${date}, userID: ${userID}`);
-
+    
     var sql = `SELECT activity.id, activity_type.type_name, activity.start_time, activity.end_time, activity.productive, activity.notes
                FROM activity
                INNER JOIN activity_type
@@ -77,7 +77,8 @@ function getDay(date, userID, callback) {
                INNER JOIN day
                ON day.id=activity.day_id
                AND day.given_day='${date}'
-               AND activity.user_id='${userID}'`;
+               AND activity.user_id='${userID}'
+               ORDER BY activity.start_time ASC`;
 
     console.log(`getDay SQL statement: ${sql}`);
 
@@ -99,7 +100,7 @@ function getDay(date, userID, callback) {
 function getGivenDays(startDate, endDate, userID, callback) {
     console.log(`Received request to get set of dates. startDate: ${startDate}, endDate: ${endDate}, userID: ${userID}`);
 
-    var sql = `SELECT activity.id, activity_type.type_name, activity.start_time, activity.end_time, activity.productive, activity.notes
+    var sql = `SELECT day.given_day, activity.id, activity_type.type_name, activity.start_time, activity.end_time, activity.productive, activity.notes
                FROM activity
                INNER JOIN activity_type
                ON activity_type.id=activity.activity_type_id
@@ -126,9 +127,69 @@ function getGivenDays(startDate, endDate, userID, callback) {
     });
 }
 
+function editDay(request, callback) {
+    console.log("Successfully called editDay in model/activities.js");
+    console.log(`Request received in activities model editDay: ${JSON.stringify(request)}`);
+
+    var activity = request[request.length - 1];
+    request.splice(request.length - 1);
+    if (activity != null) {
+        var sql = `UPDATE activity
+                    SET activity_type_id='${activity.type_id}', 
+                        start_time='${activity.start_time}',
+                        end_time='${activity.end_time}',
+                        productive='${activity.productive}',
+                        notes='${activity.notes}',
+                        last_updated=now()
+                    WHERE id='${activity.id}'`;
+        console.log(`editDay SQL statement: ${sql}`);
+         
+        pool.query(sql, function (err, result) {
+            if (err) {
+                console.log(`ERROR: ${err}`);
+                callback(err, null);
+            }
+            else {
+                editDay(request, callback);
+            }
+        });
+    }
+    else {
+        if (request.length > 0) {
+            editDay(request, callback);
+        }
+        else {
+            callback(null, {success: true});
+        }
+    }
+}
+
+function getDayId(userID, given_day, callback) {
+    console.log(`Retreiving day_id.`);
+
+    var sql = `SELECT id 
+               FROM day 
+               WHERE user_id='${userID}' 
+               AND given_day='${given_day}'`;
+
+    console.log(`getDayId SQL Statement: ${sql}`);
+    
+    pool.query(sql, function (err, result) {
+        if (err) {
+            callback(err, null);
+        }
+        else {
+            callback(null, result.rows[0]);
+        }
+    });
+}
+
 module.exports = {
     getActivityTypeNames: getActivityTypeNames,
     postDayOfActivities: postDayOfActivities,
     getDay: getDay,
-    getGivenDays: getGivenDays
+    getGivenDays: getGivenDays,
+    editDay: editDay,
+    addActivities: addActivities,
+    getDayId: getDayId
 };

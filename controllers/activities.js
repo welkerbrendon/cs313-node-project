@@ -39,7 +39,7 @@ function getMostRecentDay(request, response) {
             }
         }
         else {
-            response.json({date: date, results: result});
+            response.json({date: date, activities: result});
         }
     });
 }
@@ -55,7 +55,7 @@ function getDay(request, response) {
             response.json(err);
         }
         else {
-            response.json(result);
+            response.json({date: date, activities: result});
         }
     });
 }
@@ -90,10 +90,57 @@ function postDay(request, response) {
     });
 }
 
+function editDay(request, response) {
+    console.log("Successfully called editDay in controllers/activities.js");
+    console.log(`Request body params: ${JSON.stringify(request.body)}`);
+
+    var newActivities = [];
+    var existingActivities = [];
+    for (var i = 0; i < request.body.activities.length; i++) {
+        var tempActivity = request.body.activities[i];
+        if (tempActivity.id == "table-row") {
+            newActivities.push(tempActivity);
+        }
+        else {
+            existingActivities.push(tempActivity);
+        }
+    }
+    console.log(`newActivities: ${JSON.stringify(newActivities)}`);
+    console.log(`existingActivities: ${JSON.stringify(existingActivities)}`);
+
+    activitiesModel.editDay(existingActivities, function (err, result) {
+        if (err) {
+            console.log(`ERROR: ${err}`);
+            response.status(500).send("Unable to edit day.");
+        }
+        else {
+            activitiesModel.getDayId(request.session.user.id, request.body.date, function (err, result) {
+                if (err) {
+                    console.log(`ERROR: ${err}`);
+                    response.status(500).send("Unable to get day to add activities to.");
+                }
+                else {
+                    console.log(`day id result: ${JSON.stringify(result)}`);
+                    activitiesModel.addActivities(newActivities, request.session.user.id, result.id, function (err, result) {
+                        if (err) {
+                            console.log(`ERROR: ${err}`);
+                            response.status(500).send("Unable to add activities to day.");
+                        }
+                        else {
+                            response.json({success: true});
+                        }
+                    })
+                }
+            });
+        }
+    });
+}
+
 module.exports = {
     getActivityTypes: getActivityTypes,
     getMostRecentDay: getMostRecentDay,
     getGivenDays: getGivenDays,
     getDay: getDay,
-    postDay: postDay
+    postDay: postDay,
+    editDay: editDay
 };

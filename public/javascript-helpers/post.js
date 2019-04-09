@@ -67,10 +67,10 @@ function submitDay() {
             tempNotes = notes[i];
 
             jsonPostData.activities.push({
-                startTime: tempStartTime,
-                endTime: tempEndTime,
+                start_time: tempStartTime,
+                end_time: tempEndTime,
                 productive: tempProductive,
-                activityType: tempActivityType,
+                type_id: tempActivityType,
                 notes: tempNotes
             });
         }

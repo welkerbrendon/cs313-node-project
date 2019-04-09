@@ -11,7 +11,7 @@ function displayEditableResult(result, textStatus) {
     if (result != "Nothing found.") {
         document.getElementById("delete-row").setAttribute("onclick", `deleteRow('day-edit', ${result.activities.length})`)
         var div = document.getElementById("parent-edit");
-        var table = document.getElementById("day-input").cloneNode(true);
+        var table = globalTable.cloneNode(true);
         table.setAttribute("id", "day-edit");
 
         var tableRow  = table.childNodes[1].childNodes[2];

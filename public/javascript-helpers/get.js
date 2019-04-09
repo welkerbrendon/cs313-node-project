@@ -3,12 +3,15 @@ window.onload = setUp;
 var activityTypes = null;
 var globalTableHeaders = null;
 var globalTableRow = null;
+var globalTable = null
 
 function setUp() {
     getLoggedInStatus();
     getActivityTypes();
-    setGlobalTableRow();
-    setGlobalTableHeaders();
+
+    globalTableRow = document.getElementById("table-row").cloneNode(true);
+    globalTableHeaders = document.getElementById("table-headers").cloneNode(true);
+    globalTable = document.getElementById("day-input").cloneNode(true);
 }
 
 //server side
@@ -29,14 +32,6 @@ function getActivityTypes() {
 }
 
 //client side
-function setGlobalTableHeaders() {
-    globalTableHeaders = document.getElementById("table-headers").cloneNode(true);
-}
-
-function setGlobalTableRow() {
-    globalTableRow = document.getElementById("table-row").cloneNode(true);
-}
-
 function getDayForm() {
     resetDivs();
 

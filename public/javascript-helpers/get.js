@@ -63,7 +63,9 @@ function getDayForm() {
 function resetDivs() {
     var divs = document.getElementsByTagName("div");
     for (var i = 0; i < divs.length; i++) {
-        divs[i].style.visibility="hidden";
+        if (divs[i].getAttribute("class") != "body" && divs[i].getAttribute("class") != "navbar") {
+            divs[i].style.visibility="hidden";
+        }
     }
 }
 

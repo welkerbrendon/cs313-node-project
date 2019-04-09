@@ -1,34 +1,48 @@
 function getDayToEdit() {
+    if (document.getElementById("day-edit") != null) {
+        document.getElementById("day-edit").remove();
+    }
     var day = document.getElementById("date-to-edit").value;
     $.get("/day", {date: day}, displayEditableResult);
 }
 
 function displayEditableResult(result, textStatus) {
-    document.getElementById("delete-row").setAttribute("onclick", `deleteRow('day-edit', ${result.activities.length})`)
-    var div = document.getElementById("parent-edit");
-    var table = document.getElementById("day-input").cloneNode(true);
-    table.setAttribute("id", "day-edit");
+    document.getElementById("error").innerHTML = "";
+    if (result != "Nothing found.") {
+        document.getElementById("delete-row").setAttribute("onclick", `deleteRow('day-edit', ${result.activities.length})`)
+        var div = document.getElementById("parent-edit");
+        var table = document.getElementById("day-input").cloneNode(true);
+        table.setAttribute("id", "day-edit");
 
-    var tableRow  = table.childNodes[1].childNodes[2];
-    var activities = result.activities[0];
-    setRow(tableRow, activities);
+        var tableRow  = table.childNodes[1].childNodes[2];
+        var activities = result.activities[0];
+        setRow(tableRow, activities);
 
-    for (var i = 1; i < result.activities.length; i++) {
-        var newRow = tableRow.cloneNode(true);
-        activities = result.activities[i];
-        setRow(newRow, activities);
-        
-        table.appendChild(newRow);
+        for (var i = 1; i < result.activities.length; i++) {
+            var newRow = tableRow.cloneNode(true);
+            activities = result.activities[i];
+            setRow(newRow, activities);
+            
+            table.appendChild(newRow);
+        }
+
+        div.appendChild(table);
+        div.style.visibility = "visible";
+        addSubmitButton(div);
     }
-
-    div.appendChild(table);
-    div.style.visibility = "visible";
-    addSubmitButton(div);
+    else {
+        document.getElementById("error").innerHTML = "*No activities were found for the given day.*";
+    }
 }
 
 function addSubmitButton(div) {
+    var currentButton = document.getElementById("edit-submit");
+    if (currentButton != null) {
+        currentButton.remove();
+    }
     var button = document.createElement("button");
     button.setAttribute("onclick", "editDay()");
+    button.setAttribute("id", "edit-submit");
     button.innerHTML = "Submit";
 
     div.appendChild(button);
@@ -66,10 +80,15 @@ function setRow(tableRow, activities) {
                 addActivityTypes(tableRow.children[i].children[0], activities.type_name);
             }
             else if (id == "productive-column") {
+                var randomNum = Math.random();
+                tableRow.children[i].children[0].setAttribute("name", `productive${randomNum}`);
+                tableRow.children[i].children[2].setAttribute("name", `productive${randomNum}`);
+
                 tableRow.children[i].children[0].setAttribute("name", 
                                     tableRow.children[i].children[0].getAttribute("name") + i.toString());
                 tableRow.children[i].children[2].setAttribute("name", 
                                     tableRow.children[i].children[2].getAttribute("name") + i.toString());
+
                 if (activities.productive) {
                     tableRow.children[i].children[0].checked = true;
                 }

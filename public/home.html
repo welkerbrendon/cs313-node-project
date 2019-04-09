@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="./css-helpers/home.css">
-    <link rel="stylesheet" href="./css-helpers/padding.css">
+    <link rel="stylesheet" href="css-helpers/home.css">
+    <link rel="stylesheet" href="css-helpers/padding.css">
+    <link rel="stylesheet" href="css-helpers/error-message.css">
     <link rel="stylesheet" href="header/header.css">
 
     <script src="./javascript-helpers/get.js"></script>
@@ -28,6 +29,7 @@
         <button onclick="getDayForm()">Add New Day</button>
         <button onclick="getDateInputView()">View History</button>
         <button onclick="getDateInputEdit()">Edit Day</button>
+        <p id="error"></p>
         <div id="table-div">
             <p>Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
             <p>

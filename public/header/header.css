@@ -17,8 +17,8 @@ button.navbar {
     background-color: inherit;
     padding: 20px 30px;
     background-color: inherit;
-    border: none;
-    outline: none;
+    /*border: none;*/
+    /*outline: none;*/
 }
 
 a.navbar {

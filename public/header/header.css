@@ -17,8 +17,7 @@ button.navbar {
     background-color: inherit;
     padding: 20px 30px;
     background-color: inherit;
-    /*border: none;*/
-    outline: none;
+    border: solid;
 }
 
 a.navbar {
@@ -38,8 +37,7 @@ a.logo {
   
   .dropdown .dropbtn {
     font-size: 16px;  
-    /*border: none;*/
-    outline: none;
+    border: solid;
     padding: 20px 30px;
     background-color: inherit;
     font-family: inherit;

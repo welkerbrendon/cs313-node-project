@@ -1,14 +1,23 @@
+body {
+    font-size: 23px;
+}
+
+input, select, textarea {
+    font-size: 18px;
+}
+
 .navbar {
     visibility: visible;
-    background-color: deepskyblue;
+    background-color: #DAE8FC;
     overflow: hidden;
     padding-left: 0px;
     padding-right: 0px;
+    height: 90px;
 }
 
 img.navbar {
-    width: 62px;
-    height: 62px;
+    width: 90px;
+    height: 90px;
 }
 
 button.navbar {
@@ -18,59 +27,30 @@ button.navbar {
     padding: 20px 30px;
     background-color: inherit;
     border: solid;
+    border-width: 2px;
+    border-color: rgb(181, 209, 248);
+    width: 150px;
 }
 
-a.navbar {
+button.middle, button.left {
+    border-right: none;
+}
+
+a {
     color: black;
     text-decoration: none;
 }
 
 a.logo {
-    padding-left: 30px;
     padding-top: 2px;
 }
+  
+a.navbar:hover, button.navbar:hover {
+    background-color: #fceeda;
+    cursor: pointer;
+}
 
-.dropdown {
-    float: right;
-    overflow: hidden;
-  }
-  
-  .dropdown .dropbtn {
-    font-size: 16px;  
-    border: solid;
-    padding: 20px 30px;
-    background-color: inherit;
-    font-family: inherit;
-    margin: 0;
-    font-size: 120%;
-  }
-  
-.navbar a:hover, .dropdown:hover .dropbtn {
-    background-color: lightskyblue;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content a {
-    float: none;
-    color: black;
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
-  
-  .dropdown-content a:hover {
-    background-color: #ddd;
-  }
-  
-  #first-dropdwn:hover #first-content, #second-dropdwn:hover #second-content {
-    display: block;
-  }
+button#report-journal {
+    display: flex;
+    justify-content: center;
+}

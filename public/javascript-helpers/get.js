@@ -53,12 +53,14 @@ function getDayForm() {
     }
 
     document.getElementById("table-div").style.visibility="visible";
+    document.getElementById("journal-entry").style.visibility="visible";
 }
 
 function resetDivs() {
     var divs = document.getElementsByTagName("div");
     for (var i = 0; i < divs.length; i++) {
-        if (divs[i].getAttribute("class") != "body" && divs[i].getAttribute("class") != "navbar") {
+        var classValue = divs[i].getAttribute("class");
+        if (classValue != "body" && classValue != "navbar") {
             divs[i].style.visibility="hidden";
         }
     }

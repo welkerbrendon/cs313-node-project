@@ -1,0 +1,50 @@
+button {
+    font-size: 23px;
+}
+
+button.main {
+    width: 266px;
+    height: 133px;
+
+    margin-right: 146px;
+    margin-top: 5%;
+    position: relative;
+
+    background-image: linear-gradient(to bottom, #d5e8d4, white);
+    
+    border-radius: 25px;
+    border: solid;
+    border-width: 2px;
+    border-color: #d5e8d4;
+}
+
+button.main:hover {
+    cursor: pointer;
+}
+
+button.addRow, button.deleteRow, button.clear, button.submit {
+    border-radius: 5px;
+    border: solid;
+    border-width: 1px;
+    background-color: white;
+}
+
+button.addRow, button.submit {
+    width: 120px;
+    height: 53px;
+}
+
+button.deleteRow, button.clear {
+    margin-left: 61px;
+    font-size: 20px;
+}
+
+button.deleteRow {
+    width: 93px;
+    height: 46px;
+}
+
+button.clear {
+    width: 80px;
+    height: 26px;
+}

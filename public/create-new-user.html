@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css-helpers/error-message.css">
     <link rel="stylesheet" href="css-helpers/padding.css">
     <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="css-helpers/log-in.css"
 
     <script src="javascript-helpers/create-new-user.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -16,32 +17,40 @@
 </head>
 <body>
     <div class="navbar">
-        <a class="logo" href="../home.html"><img class="navbar" src="header/BMW-Emblem.jpg"></a>
-        <button class="navbar"><a class="navbar" href="log-in.html">Sign In</a></button>
+        <a class="logo" href="../home.html"><img class="navbar" src="header/cropped-site-logo.jpg"></a>
+        <a class="navbar" href="log-in.html"><button class="navbar">Sign In</button></a>
     </div>
     <div class="body">
         <h1>Fill in the following information to create a new account.</h1>
         <p id="error"></p>
         <table>
             <tr>
-                <td>First Name:</td>
+                <td class="lhs">First Name:</td>
                 <td><input type="text" placeholder="First Name" id="first"></td>
             </tr>
             <tr>
-                <td>Last Name:</td>
+                <td class="lhs">Last Name:</td>
                 <td><input type="text" placeholder="Last Name" id="last"></td>
             </tr>
             <tr>
-                <td>Username:</td>
+                <td class="lhs">Username:</td>
                 <td><input type="text" placeholder="Username" id="username"></td>
             </tr>
             <tr>
-                <td>Password:</td>
+                <td class="lhs">Password:</td>
                 <td><input type="password" placeholder="Password" id="password"></td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="table" id="create" onclick="createUser()">Create</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="log-in.html"><button class="table">Log In</button></a>
+                </td>
+            </tr>
         </table>
-        <p><button onclick="createUser()">Create</button></p>
-        <p><a href="log-in.html"><button>Log In</button></a></p>
     </div>
 </body>
 </html>

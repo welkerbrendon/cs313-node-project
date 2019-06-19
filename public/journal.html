@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="css-helpers/buttons.css">
+    <link rel="stylesheet" href="css-helpers/padding.css">
+    <link rel="stylesheet" href="css-helpers/error-message.css">
+    <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="css-helpers/plan-report.css">
+
+    <script src="./javascript-helpers/get.js"></script>
+    <script src="./javascript-helpers/post.js"></script>
+    <script src="./javascript-helpers/get-history.js"></script>
+    <script src="./javascript-helpers/day-to-edit.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./header/header.js"></script>
+    
+    <title>Home</title>
+</head>
+<body>
+    <div class="navbar">
+        <a class="logo" href="./home.html"><img class="navbar" src="./header/cropped-site-logo.jpg"></a>
+        <button class="navbar" onclick="signOut()"><a>Sign Out</a></btton>
+        <button class="navbar middle"><a href="./home.html">Home</a></button>
+        <button class="navbar middle"><a href="./planner.html">Planner</a></button>
+        <button class="navbar left"><a href="./journal.html">Report/ Journal</a></button>
+    </div>
+    <div class="body">
+        <button class="main" onclick="getDayForm()">Report On New Day</button>
+        <button class="main" onclick="getDateInputView()">View Report History</button>
+        <button class="main" onclick="getDateInputEdit()">Edit Reported Day</button>
+        <p id="error"></p>
+        <div id="table-div">
+            <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
+            <p>
+                <button class="addRow" onclick="addRow('day-input')">Add Row</button>
+                <button class="deleteRow" onclick="deleteRow('day-input', 1)">Delete Row</button>
+            </p>
+            <table id="day-input" border=1 style="width:100%">
+                <tr id="table-headers">
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Productive</th>
+                    <th>Activity Type</th>
+                    <th>Notes</th>
+                </tr>
+                <tr id="table-row">
+                    <td id="start-time-column">
+                        <input type="time" name="start-time">
+                    </td>
+                    <td id="end-time-column">
+                        <input type="time" name="end-time">
+                    </td>
+                    <td id="productive-column">
+                        <input type="radio" name="productive" class="productive" value="True">True<br>
+                        <input type="radio" name="productive" class="productive" value="False">False
+                    </td>
+                    <td id="activity-type-column">
+                        <select id="activity-type" name="activity-type">
+                            <option value='' selected disabled hidden>--Choose Activity Type--</option>
+                        </select>
+                    </td>
+                    <td id="notes-column">
+                        <textarea name="notes" rows="4" cols="75" style="width:99%; height:100%;" placeholder="--Optional--"></textarea>
+                    </td>
+                </tr>
+            </table>
+            <div class="journal-entry" id="journal-entry">
+                <b>Additional Notes About Day:</b><br>
+                <textarea rows="8" cols="99999" style="width:100%"></textarea>
+            </div>
+            <p id="input-error"></p>
+            <button class="submit" onclick="submitDay()">Submit</button>
+            <button class="clear" onclick="clearTable('day-input')">Clear</button>
+        </div>
+        <p>
+            <div id="time-period-selection">
+                <input type="radio" name="time-period" onclick="clearTimeInput()" value="most-recent">Most Recent Day<br>
+                <input type="radio" name="time-period" onclick="day('time-input')" value="day">Selected Day<br>
+                <input type="radio" name="time-period" onclick="week()" value="week">Past Week<br>
+                <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
+                <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
+                <div id="time-input"></div>
+                <button onclick="getHistory()">Submit</button>
+                <div id="result"></div>
+            </div>
+        </p>
+        <div id="parent-edit">
+            <div id="edit">
+                <p>
+                    Day to edit: <input type="date" id="date-to-edit"><br>
+                    <button onclick="getDayToEdit()">Edit</button>
+                </p>
+            </div>
+            <p id="table-editors">
+                    <button onclick="addRow('day-edit')">Add Row</button>
+                    <button id="delete-row">Delete Row</button>
+                    <button onclick="clearTable('day-edit')">Clear Activities</button>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

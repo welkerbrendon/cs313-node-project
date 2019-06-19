@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css-helpers/error-message.css">
     <link rel="stylesheet" href="./css-helpers/padding.css">
     <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="css-helpers/log-in.css">
 
     <script src="./javascript-helpers/log-in.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
@@ -16,24 +17,32 @@
 </head>
 <body>
     <div class="navbar">
-        <a class="logo" href="../home.html"><img class="navbar" src="./header/BMW-Emblem.jpg"></a>
-        <button class="navbar"><a class="navbar" href="create-new-user.html">Create Account</a></button>
+        <a class="logo" href="./home.html"><img class="navbar" src="./header/cropped-site-logo.jpg"></a>
+        <a href="create-new-user.html"><button class="navbar">Create Account</a></button>
     </div>
     <div class="body">
         <h1>Please Log In</h1>
         <p id="error"></p>
         <table>
             <tr>
-                <td>Username:</td>
+                <td class="lhs">Username:</td>
                 <td><input type="text" placeholder="username" id="username"></td>
             </tr>
             <tr>
-                <td>Password:</td>
+                <td class="lhs">Password:</td>
                 <td><input type="password" placeholder="password" id="password"></td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <button class="table" id="log-in" onclick="logIn()">Log In</button>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <a href="/create-new-user.html"><button class="table">Create New Accout</button></a>
+                </td>
+            </tr>
         </table>
-        <button onclick="logIn()">Log In</button>
-        <p><a href="/create-new-user.html"><button>Create New Accout</button></a></p>
     </div>
 </body>
 </html>

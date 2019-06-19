@@ -1,0 +1,30 @@
+div {
+    visibility: hidden;
+}
+
+#time-period-selection, #table-div {
+    position: absolute;
+}
+
+#date-error, #input-error {
+    color: red;
+}
+
+#results-table {
+    table-layout: fixed;
+    width: 40%;
+}
+
+input#date {
+    font-size: 20px;
+}
+
+.journal-entry {
+    padding-top: 2%;
+    position: relative;
+    font-size: 23px;
+}
+
+div#table-div {
+    width: 90%;
+}

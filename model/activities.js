@@ -50,8 +50,15 @@ function addActivities(activities, userID, dayID, callback) {
         activities.splice(activities.length - 1);
 
         var new_uuid = uuidv1();
-        var activitySQL = `INSERT INTO activity (id, user_id, day_id, activity_type_id, start_time, end_time, productive, notes, last_updated, created_at)
-                           VALUES ('${new_uuid}', '${userID}', '${dayID}', '${activityData.type_id}', '${activityData.start_time}', '${activityData.end_time}', '${activityData.productive}', '${activityData.notes}', now(), now())`;
+        var activitySQL = `INSERT INTO activity (id, user_id, day_id,
+                                                 activity_type_id, start_time, 
+                                                 end_time, productive, notes, 
+                                                 plan, last_updated, created_at)
+                           VALUES ('${new_uuid}', '${userID}', '${dayID}', 
+                                   '${activityData.type_id}', '${activityData.start_time}', 
+                                   '${activityData.end_time}', '${activityData.productive}', 
+                                   '${activityData.notes}', '${activityData.plan}, 
+                                    now(), now())`;
         
         console.log(`activitySQL: ${activitySQL}`);
         pool.query(activitySQL, function(err, result) {
@@ -67,10 +74,13 @@ function addActivities(activities, userID, dayID, callback) {
     }
 }
 
-function getDay(date, userID, callback) {
+function getDay(date, userID, plan, callback) {
     console.log(`Received request to get date. Date: ${date}, userID: ${userID}`);
     
-    var sql = `SELECT activity.id, activity_type.type_name, activity.start_time, activity.end_time, activity.productive, activity.notes
+    var sql = `SELECT activity.id, activity_type.type_name, 
+                      activity.start_time, activity.end_time, 
+                      activity.productive, activity.notes,
+                      day.journal_entry
                FROM activity
                INNER JOIN activity_type
                ON activity_type.id=activity.activity_type_id
@@ -78,6 +88,7 @@ function getDay(date, userID, callback) {
                ON day.id=activity.day_id
                AND day.given_day='${date}'
                AND activity.user_id='${userID}'
+               AND activity.plan='${plan}'
                ORDER BY activity.start_time ASC`;
 
     console.log(`getDay SQL statement: ${sql}`);
@@ -97,7 +108,7 @@ function getDay(date, userID, callback) {
     });
 }
 
-function getGivenDays(startDate, endDate, userID, callback) {
+function getGivenDays(startDate, endDate, userID, plan, callback) {
     console.log(`Received request to get set of dates. startDate: ${startDate}, endDate: ${endDate}, userID: ${userID}`);
 
     var sql = `SELECT day.given_day, activity.id, activity_type.type_name, activity.start_time, activity.end_time, activity.productive, activity.notes
@@ -108,7 +119,8 @@ function getGivenDays(startDate, endDate, userID, callback) {
                ON day.id=activity.day_id
                AND day.given_day>='${startDate}'
                AND day.given_day<='${endDate}'
-               AND activity.user_id='${userID}'`
+               AND activity.user_id='${userID}'
+               AND activity.plan='${plan}'`
     
     console.log(`getGivenDats SQL statement: ${sql}`);
 

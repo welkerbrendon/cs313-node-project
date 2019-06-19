@@ -5,95 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <link rel="stylesheet" href="css-helpers/home.css">
-    <link rel="stylesheet" href="css-helpers/padding.css">
-    <link rel="stylesheet" href="css-helpers/error-message.css">
     <link rel="stylesheet" href="header/header.css">
+    <link rel="stylesheet" href="css-helpers/padding.css">
+    <link rel="stylesheet" href="css-helpers/home.css">
 
-    <script src="./javascript-helpers/get.js"></script>
-    <script src="./javascript-helpers/post.js"></script>
-    <script src="./javascript-helpers/get-history.js"></script>
-    <script src="./javascript-helpers/day-to-edit.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="./javascript-helpers/get.js"></script>
     <script src="./header/header.js"></script>
     
-    <title>Home</title>
+    <title>Document</title>
 </head>
 <body>
     <div class="navbar">
-        <a class="logo" href="../home.html"><img class="navbar" src="./header/BMW-Emblem.jpg"></a>
-        <button class="navbar" onclick="signOut()"><a class="navbar" href="log-in.html">Sign out</a></button>
+        <a class="logo" href="./home.html"><img class="navbar" src="./header/cropped-site-logo.jpg"></a>
+        <button class="navbar" onclick="signOut()">Sign Out</btton>
+        <a href="./home.html"><button class="navbar middle">Home</button></a>
+        <a href="./planner.html"><button class="navbar middle">Planner</button></a>
+        <a href="./journal.html"><button class="navbar left">Report/ Journal</button></a>
     </div>
     <div class="body">
-        <h1>Activity Tracker</h1>
-        <button onclick="getDayForm()">Add New Day</button>
-        <button onclick="getDateInputView()">View History</button>
-        <button onclick="getDateInputEdit()">Edit Day</button>
-        <p id="error"></p>
-        <div id="table-div">
-            <p>Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
-            <p>
-                <button onclick="addRow('day-input')">Add Row</button>
-                <button onclick="deleteRow('day-input', 1)">Delete Row</button>
-                <button onclick="clearTable('day-input')">Clear Activities</button>
-            </p>
-            <table id="day-input" border=1>
-                <tr id="table-headers">
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Productive</th>
-                    <th>Activity Type</th>
-                    <th>Notes</th>
-                </tr>
-                <tr id="table-row">
-                    <td id="start-time-column">
-                        <input type="time" name="start-time">
-                    </td>
-                    <td id="end-time-column">
-                        <input type="time" name="end-time">
-                    </td>
-                    <td id="productive-column">
-                        <input type="radio" name="productive" class="productive" value="True">True<br>
-                        <input type="radio" name="productive" class="productive" value="False">False
-                    </td>
-                    <td id="activity-type-column">
-                        <select id="activity-type" name="activity-type">
-                            <option value='' selected disabled hidden>--Choose Activity Type--</option>
-                        </select>
-                    </td>
-                    <td id="notes-column">
-                        <textarea name="notes" rows="4" cols="75" placeholder="--Optional--"></textarea>
-                    </td>
-                </tr>
-            </table>
-            <p id="input-error"></p>
-            <button onclick="submitDay()">Submit</button>
-        </div>
-        <p>
-            <div id="time-period-selection">
-                <input type="radio" name="time-period" onclick="clearTimeInput()" value="most-recent">Most Recent Day<br>
-                <input type="radio" name="time-period" onclick="day('time-input')" value="day">Selected Day<br>
-                <input type="radio" name="time-period" onclick="week()" value="week">Past Week<br>
-                <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
-                <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
-                <div id="time-input"></div>
-                <button onclick="getHistory()">Submit</button>
-                <div id="result"></div>
-            </div>
+        <h1>Time Heist</h1>
+        <p style="padding-top:5%">
+            “It must be borne in mind that the tragedy of life
+            doesn’t lie in not reaching your goal. The tragedy
+            lies in having no goals to reach.”
+            <br><br>
+            – Benjamin E. Mays
         </p>
-        <div id="parent-edit">
-            <div id="edit">
-                <p>
-                    Day to edit: <input type="date" id="date-to-edit"><br>
-                    <button onclick="getDayToEdit()">Edit</button>
-                </p>
-            </div>
-            <p id="table-editors">
-                    <button onclick="addRow('day-edit')">Add Row</button>
-                    <button id="delete-row">Delete Row</button>
-                    <button onclick="clearTable('day-edit')">Clear Activities</button>
-            </p>
-        </div>
+        <p>
+            "In the diary you find proof that in situations which
+            today would seem unbearable, you lived, looked around
+            and wrote down observations, that this right hand moved"
+            then as it does today.
+            <br><br>
+            – Franz Kafka
+        </p>
+        <p>
+            “The trouble with not having a goal is that you can spend 
+            your life running up and down the field and never score.”
+            <br><br>
+            – Bill Copeland
+        </p>
+        <p>
+            "If there was no other motive in view [except] to have the
+            privilege of reading over out journals and for our children
+            to read, it would pay for the time spent in writing it."
+            <br><br>
+            – Wilford Woodruff
+        </p>
     </div>
 </body>
 </html>

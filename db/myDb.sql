@@ -12,6 +12,7 @@ CREATE TABLE day (
     id VARCHAR(47) PRIMARY KEY,
     given_day DATE NOT NULL,
     user_id UUID NOT NULL REFERENCES user_info(id),
+    journal TEXT,
     last_updated TIMESTAMP NOT NULL,
     created_at TIMESTAMP NOT NULL
 );

@@ -1,16 +1,4 @@
-div {
-    visibility: hidden;
-}
-
-#time-period-selection, #table-div {
-    position: absolute;
-}
-
-#date-error, #input-error {
-    color: red;
-}
-
-#results-table {
-    table-layout: fixed;
-    width: 40%;
+p {
+    padding-right: 40%;
+    padding-top: 10%;
 }

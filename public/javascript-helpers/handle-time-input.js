@@ -1,60 +1,51 @@
 function handleInput(element) {
-    var value = element.value;
-    if (isNaN(value)) {
-        if (value.includes(":")) {
-            var counter = 0;
-            var validCharacters = true;
-            for (var i = 0; i < value.length; i++) {
-                if (isNaN(value[i])) {
-                    if (value[i] == ":" && i > 0) {
-                        if (counter == 0) {
-                            counter++;
-                        }
-                        else {
-                            document.getElementById("Invalid time format. Please enter time with only numbers or in the format of --:--");
-                        }
-                    }
-                    else {
-                        document.getElementById("Invalid time format. Please enter time with only numbers or in the format of --:--");
-                    }
-                }
-            }
-            if (validCharacters) {
-                var onlyNumbers = "";
-                for (var i = 0; i < value.length; i++) {
-                    if (!isNaN(value[i])) {
-                        onlyNumbers += value[i];
-                    }
-                }
-                if (parseInt(onlyNumbers) < 100 || parseInt(onlyNumbers) >= 1300) {
-                    document.getElementById("output").innerHTML = "Invalid time given. Please give at least 3 numbers representing the hours (1-12) and minutes (00-59)";
-                }
-                else {
-                    if (onlyNumbers.length == 3) {
-                        document.getElementById("output").innerHTML = "";
-                        element.value = `0${onlyNumbers[0]}:${onlyNumbers[1]}${onlyNumbers[2]}`;
-                    }
-                    else {
-                        document.getElementById("output").innerHTML = "";
-                        element.value = `${onlyNumbers[0]}${value[1]}:${onlyNumbers[2]}${onlyNumbers[3]}`;
-                    }
-                }
-            }
+    if (element.value.length > 2) {
+        if (isNaN(element.value)) {
+            handlePreFormatted(element);
+        }
+        else {
+            handleNumOnly(element);
         }
     }
     else {
-        if (parseInt(value) < 100 || parseInt(value) >= 1300) {
-            document.getElementById("output").innerHTML = "Invalid time given. Please give at least 3 numbers representing the hours (1-12) and minutes (00-59)";
+        document.getElementById("output").innerHTML = "ERROR: invalid time. Too few numbers given.";
+    }
+}
+
+function handlePreFormatted(element) {
+    if (isNaN(element.value[0])) {
+        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
+    }
+    else if (isNaN(element.value[1]) && element.value[1] != ":") {
+        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
+    }
+    else if (isNaN(element.value[2]) && element.value[2] != ":") {
+        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
+    }
+    else {
+        for (var i = 3; i < element.value.length; i++) {
+            if (isNaN(element.value[i])) {
+                document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
+                return;
+            }
+        }
+        document.getElementById("output").innerHTML = "";
+    }
+}
+
+function handleNumOnly(element) {
+    const valueAsInt = parseInt(element.value);
+    if (valueAsInt < 100 || valueAsInt > 1300 || (valueAsInt % 100 > 59) || (valueAsInt / 100 > 12)) {
+        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please input at least 3 numbers representing the hours (1-12) and minutes (00-59).";
+    }
+    else {
+        if (element.value.length == 3) {
+            element.value = `0${element.value[0]}:${element.value[1]}${element.value[2]}`;
+            document.getElementById("output").innerHTML = "";
         }
         else {
-            if (value.length == 3) {
-                document.getElementById("output").innerHTML = "";
-                element.value = `0${value[0]}:${value[1]}${value[2]}`;
-            }
-            else {
-                document.getElementById("output").innerHTML = "";
-                element.value = `${value[0]}${value[1]}:${value[2]}${value[3]}`;
-            }
+            element.value = `${element.value[0]}${element.value[1]}:${element.value[2]}${element.value[3]}`;
+            document.getElementById("output").innerHTML = "";
         }
     }
 }

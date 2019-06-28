@@ -10,12 +10,12 @@ button.main {
     margin-top: 5%;
     position: relative;
 
-    background-image: linear-gradient(to bottom, #d5e8d4, white);
+    background-image: linear-gradient(to bottom, #00ace6, white);
     
     border-radius: 25px;
     border: solid;
     border-width: 2px;
-    border-color: #d5e8d4;
+    border-color: #00ace6;
 }
 
 button.main:hover {
@@ -26,7 +26,16 @@ button.addRow, button.deleteRow, button.clear, button.submit {
     border-radius: 5px;
     border: solid;
     border-width: 1px;
-    background-color: white;
+}
+
+button.addRow, button.submit {
+    /* background-color: #e64900; */
+    background-color: #e60f00;
+}
+
+button.deleteRow, button.clear {
+    /* background-color: #e60f00; */
+    background-color: #e64900;
 }
 
 button.addRow, button.submit {

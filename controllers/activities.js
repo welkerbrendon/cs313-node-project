@@ -21,7 +21,7 @@ function getMostRecentDay(request, response) {
 
     console.log(`Requesting day from model. date: ${date}, userID: ${userID}`);
 
-    activitiesModel.getDay(date, userID, function (err, result) {
+    activitiesModel.getDay(date, userID, request.planner, function (err, result) {
         if (err) {
             if (attemptCount <= 365) {
                 var dateObject = new Date(date);
@@ -44,13 +44,29 @@ function getMostRecentDay(request, response) {
     });
 }
 
-function getDay(request, response) {
+function getPlannedDay(request, response) {
     var userID = request.session.user.id;
     var date = request.query.date;
 
     console.log(`Request day from model. date: ${date}, userID: ${userID}`);
 
-    activitiesModel.getDay(date, userID, function (err, result) {
+    activitiesModel.getDay(date, userID, true, function (err, result) {
+        if (err) {
+            response.json(err);
+        }
+        else {
+            response.json({date: date, activities: result});
+        }
+    });
+}
+
+function getJournalDay(request, response) {
+    var userID = request.session.user.id;
+    var date = request.query.date;
+
+    console.log(`Request day from model. date: ${date}, userID: ${userID}`);
+
+    activitiesModel.getDay(date, userID, false, function (err, result) {
         if (err) {
             response.json(err);
         }
@@ -77,15 +93,35 @@ function getGivenDays(request, response) {
     });
 }
 
-function postDay(request, response) {
+function postPlan(request, response) {
     console.log(`Request body received by activities controller postDay: ${JSON.stringify(request.body)}`);
-    activitiesModel.postDayOfActivities(request.body, request.session.user.id, function(err, result) {
+    activitiesModel.postDayOfActivities(request.body, request.session.user.id, true, function(err, result) {
         if (err) {
             console.log(`Got following error from activities model: ${err}`);
             response.status(500).send(err);
         }
         else {
             response.json(result);
+        }
+    });
+}
+
+function postJournalEntry(request, response) {
+    console.log(`Request body received by activities controller postDay: ${JSON.stringify(request.body)}`);
+    activitiesModel.postDayOfActivities(request.body, request.session.user.id, false, function(err, result) {
+        if (err) {
+            console.log(`Got following error from activities model: ${err}`);
+            response.status(500).send(err);
+        }
+        else {
+            activitiesModel.postJournalEntry(request.body, request.session.user.id, function(err, secondResult) {
+                if (err) {
+                    return response.json({success: false});
+                }
+                else {
+                    response.json({success: true, result: result + secondResult});
+                }
+            });
         }
     });
 }
@@ -140,7 +176,9 @@ module.exports = {
     getActivityTypes: getActivityTypes,
     getMostRecentDay: getMostRecentDay,
     getGivenDays: getGivenDays,
-    getDay: getDay,
-    postDay: postDay,
-    editDay: editDay
+    getPlannedDay: getPlannedDay,
+    getJournalDay: getJournalDay,
+    postPlan: postPlan,
+    editDay: editDay,
+    postJournalEntry: postJournalEntry
 };

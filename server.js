@@ -22,7 +22,8 @@ app.use(session({secret: "lksjdlfkop9792743"}));
 app.post("/create-user", accountController.createUser);
 app.post("/log-in", accountController.logInUser);
 app.post("/sign-out", accountController.signOut);
-app.post("/add-day", activitiesController.postDay);
+app.post("/add-plan", activitiesController.postPlan);
+app.post("/add-journal-entry", activitiesController.postJournalEntry)
 app.post("/edit-day", activitiesController.editDay);
 
 
@@ -31,8 +32,9 @@ app.get("/", function (request, response) {
 });
 app.get("/activity-types", activitiesController.getActivityTypes);
 app.get("/logged-in-status", accountController.checkIfLoggedIn);
-app.get("/most-recent-day", activitiesController.getMostRecentDay);
-app.get("/day", activitiesController.getDay);
+app.get("/most-recent-planned-day", activitiesController.getMostRecentDay);
+app.get("/planned-day", activitiesController.getPlannedDay);
+app.get("/journal-day", activitiesController.getJournalDay);
 app.get("/given-days", activitiesController.getGivenDays);
 
 app.listen(port, function() {

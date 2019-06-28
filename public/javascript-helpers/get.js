@@ -32,7 +32,7 @@ function getActivityTypes() {
 }
 
 //client side
-function getDayForm() {
+function getDayForm(plan) {
     resetDivs();
 
     if (document.getElementById("day-input").childNodes.length <= 3) {
@@ -43,17 +43,21 @@ function getDayForm() {
         var productiveName = "";
         for (var i = 0; i < 6; i++) {
             var tableRow = document.getElementById("table-row").cloneNode(true);
-            var productiveTrue = tableRow.childNodes[5].childNodes[1];
-            var productiveFalse = tableRow.childNodes[5].childNodes[5];
-            productiveName = "productive" + (i + 1).toString();
-            productiveTrue.setAttribute("name", productiveName);
-            productiveFalse.setAttribute("name", productiveName);
+            if (!plan) {
+                var productiveTrue = tableRow.childNodes[5].childNodes[1];
+                var productiveFalse = tableRow.childNodes[5].childNodes[5];
+                productiveName = "productive" + (i + 1).toString();
+                productiveTrue.setAttribute("name", productiveName);
+                productiveFalse.setAttribute("name", productiveName);
+            }
             table.appendChild(tableRow);
         }
     }
 
     document.getElementById("table-div").style.visibility="visible";
-    document.getElementById("journal-entry").style.visibility="visible";
+    if (document.getElementById("journal-entry")) {
+        document.getElementById("journal-entry").style.visibility="visible";
+    }
 }
 
 function resetDivs() {

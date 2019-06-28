@@ -25,6 +25,6 @@ input#date {
     font-size: 23px;
 }
 
-div#table-div {
+div#table-div, #results-table {
     width: 90%;
 }

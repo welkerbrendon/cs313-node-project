@@ -1,9 +1,9 @@
-function getDayToEdit() {
+function getPlanToEdit() {
     if (document.getElementById("day-edit") != null) {
         document.getElementById("day-edit").remove();
     }
     var day = document.getElementById("date-to-edit").value;
-    $.get("/day", {date: day}, displayEditableResult);
+    $.get("/planned-day", {date: day}, displayEditableResult);
 }
 
 function displayEditableResult(result, textStatus) {
@@ -89,11 +89,13 @@ function setRow(tableRow, activities) {
                 tableRow.children[i].children[2].setAttribute("name", 
                                     tableRow.children[i].children[2].getAttribute("name") + i.toString());
 
-                if (activities.productive) {
-                    tableRow.children[i].children[0].checked = true;
-                }
-                else {
-                    tableRow.children[i].children[2].checked = true;
+                if (activities.includes("productive")) {
+                    if (activities.productive) {
+                        tableRow.children[i].children[0].checked = true;
+                    }
+                    else {
+                        tableRow.children[i].children[2].checked = true;
+                    }
                 }
             }
         }

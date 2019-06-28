@@ -23,17 +23,17 @@
 <body>
     <div class="navbar">
         <a class="logo" href="./home.html"><img class="navbar" src="./header/cropped-site-logo.jpg"></a>
-        <button class="navbar" onclick="signOut()"><a>Sign Out</a></btton>
-        <button class="navbar middle"><a href="./home.html">Home</a></button>
-        <button class="navbar middle"><a href="./planner.html">Planner</a></button>
-        <button class="navbar left"><a href="./journal.html">Report/ Journal</a></button>
+        <button class="navbar" onclick="signOut()">Sign Out</btton>
+        <a href="./planner.html"><button class="navbar middle">Planner</button></a>
+        <a href="./journal.html"><button class="navbar left">Report/ Journal</button></a>
+        <a href="./home.html"><button class="navbar middle">Home</button></a>
     </div>
     <div class="body">
-        <button class="main" onclick="getDayForm()">Plan New Day</button>
-        <button class="main" onclick="getDateInputView()">View Plan History</button>
-        <button class="main" onclick="getDateInputEdit()">Edit Planned Day</button>
+        <button class="main" onclick="getDayForm(true)">Make Plan</button>
+        <button class="main" onclick="getDateInputView()">View Plan</button>
+        <button class="main" onclick="getDateInputEdit()">Edit Plan</button>
         <p id="error"></p>
-        <div id="table-div">
+        <div class="table-div" id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
             <p>
                 <button class="addRow" onclick="addRow('day-input')">Add Row</button>
@@ -43,20 +43,23 @@
                 <tr id="table-headers">
                     <th>Start Time</th>
                     <th>End Time</th>
-                    <th>Productive</th>
                     <th>Activity Type</th>
                     <th>Notes</th>
                 </tr>
                 <tr id="table-row">
                     <td id="start-time-column">
-                        <input type="time" name="start-time">
+                        <input type="time" class="without_ampm"  />
+                        <select id="am/pm" name="am/pm">
+                            <option value='AM'>AM</option>
+                            <option value='PM'>PM</option>
+                        </select>
                     </td>
                     <td id="end-time-column">
-                        <input type="time" name="end-time">
-                    </td>
-                    <td id="productive-column">
-                        <input type="radio" name="productive" class="productive" value="True">True<br>
-                        <input type="radio" name="productive" class="productive" value="False">False
+                        <input type="time" class="without_ampm"  />
+                        <select id="am/pm" name="am/pm">
+                            <option value='AM'>AM</option>
+                            <option value='PM'>PM</option>
+                        </select>
                     </td>
                     <td id="activity-type-column">
                         <select id="activity-type" name="activity-type">
@@ -69,7 +72,7 @@
                 </tr>
             </table>
             <p id="input-error"></p>
-            <button class="submit" onclick="submitDay()">Submit</button>
+            <button class="submit" onclick="submitPlan()">Submit</button>
             <button class="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
         <p>
@@ -80,15 +83,15 @@
                 <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
                 <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
                 <div id="time-input"></div>
-                <button onclick="getHistory()">Submit</button>
-                <div id="result"></div>
+                <button onclick="getHistory(true)">Submit</button>
+                <div class="table-div" id="result"></div>
             </div>
         </p>
         <div id="parent-edit">
             <div id="edit">
                 <p>
                     Day to edit: <input type="date" id="date-to-edit"><br>
-                    <button onclick="getDayToEdit()">Edit</button>
+                    <button onclick="getPlanToEdit()">Edit</button>
                 </p>
             </div>
             <p id="table-editors">

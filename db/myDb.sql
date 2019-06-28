@@ -37,3 +37,12 @@ CREATE TABLE activity_type (
     universal BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL
 );
+
+CREATE TABLE journal_entry (
+    id SERIAL PRIMARY KEY,
+    user_id UUID NOT NULL REFERENCES user_info(id),
+    day_id VARCHAR(47) NOT NULL REFERENCES day(id),
+    entry TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL,
+    last_updated TIMESTAMP NOT NULL
+);

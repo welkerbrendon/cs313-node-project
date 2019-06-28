@@ -23,15 +23,15 @@
 <body>
     <div class="navbar">
         <a class="logo" href="./home.html"><img class="navbar" src="./header/cropped-site-logo.jpg"></a>
-        <button class="navbar" onclick="signOut()"><a>Sign Out</a></btton>
-        <button class="navbar middle"><a href="./home.html">Home</a></button>
-        <button class="navbar middle"><a href="./planner.html">Planner</a></button>
-        <button class="navbar left"><a href="./journal.html">Report/ Journal</a></button>
+        <button class="navbar" onclick="signOut()">Sign Out</btton>
+        <a href="./planner.html"><button class="navbar middle">Planner</button></a>
+        <a href="./journal.html"><button class="navbar left">Report/ Journal</button></a>
+        <a href="./home.html"><button class="navbar middle">Home</button></a>
     </div>
     <div class="body">
-        <button class="main" onclick="getDayForm()">Report On New Day</button>
-        <button class="main" onclick="getDateInputView()">View Report History</button>
-        <button class="main" onclick="getDateInputEdit()">Edit Reported Day</button>
+        <button class="main" onclick="getDayForm(false)">Report Day</button>
+        <button class="main" onclick="getDateInputView()">View Report</button>
+        <button class="main" onclick="getDateInputEdit()">Edit Report</button>
         <p id="error"></p>
         <div id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
@@ -70,10 +70,10 @@
             </table>
             <div class="journal-entry" id="journal-entry">
                 <b>Additional Notes About Day:</b><br>
-                <textarea rows="8" cols="99999" style="width:100%"></textarea>
+                <textarea rows="8" cols="99999" style="width:100%" id="textarea"></textarea>
             </div>
             <p id="input-error"></p>
-            <button class="submit" onclick="submitDay()">Submit</button>
+            <button class="submit" onclick="submitJournal()">Submit</button>
             <button class="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
         <p>
@@ -84,7 +84,7 @@
                 <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
                 <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
                 <div id="time-input"></div>
-                <button onclick="getHistory()">Submit</button>
+                <button onclick="getHistory(false)">Submit</button>
                 <div id="result"></div>
             </div>
         </p>

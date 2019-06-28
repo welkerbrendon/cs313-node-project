@@ -1,4 +1,4 @@
-function getHistory() {
+function getHistory(planner) {
     var radioButtons = document.getElementsByName("time-period");
     var selectedValue = null;
     for (var i = 0; i < radioButtons.length; i++) {
@@ -15,43 +15,61 @@ function getHistory() {
 
     switch (selectedValue) {
         case "most-recent":
-            getMostRecentDay();
+            getMostRecentDay(planner);
             break;
         case "day":
-            getDay();
+            getDay(planner);
             break;
         case "week":
-            getWeek();
+            getWeek(planner);
             break;
         case "month":
-            getMonth();
+            getMonth(planner);
             break;
         case "custom":
-            getCustom();
+            getCustom(planner);
             break;
     }
 }
 
-function getMostRecentDay() {
+function getMostRecentDay(planner) {
     console.log("getMostRecentDay() called.");
 
     var date = new Date();
     var dateString = date.toISOString();
     dateString = dateString.split("T")[0];
     
-    $.get("/most-recent-day", {date: dateString}, displayResults);
+    if (planner) {
+        $.get("/most-recent-day", {date: dateString}, function (result, textStatus) {
+            if (textStatus == "success") {
+                displayResults(result, planner);
+            }
+        });
+    }
 }
 
-function getDay() {
+function getDay(planner) {
     console.log("getDay() called.");
 
     var date = document.getElementById("day").value;
     console.log(`Date desired: ${date}`);
-
-    $.get("/day", {date: date}, displayResults);
+    if (planner) {
+        $.get("/planned-day", {date: date}, function (result, textStatus) {
+            if (textStatus == "success") {
+                displayResults(result, planner);
+            }
+        });
+    }
+    else {
+        $.get("/journal-day", {date: date}, function (result, textStatus) {
+            if (textStatus == "success") {
+                displayResults(result, planner);
+            }
+        });
+    }
 }
 
-function getWeek() {
+function getWeek(planner) {
     console.log("getWeek() called.");
 
     var startDate = new Date(document.getElementById("day").value);
@@ -67,10 +85,10 @@ function getWeek() {
 
     console.log(`desired startDate: ${startDateString}, calculated endDate: ${endDateString}`);
 
-    getTimePeriod(startDateString, endDateString);
+    getTimePeriod(startDateString, endDateString, planner);
 }
 
-function getMonth() {
+function getMonth(planner) {
     console.log("getMonth() called.");
 
     var monthDate = document.getElementById("month").value;
@@ -97,26 +115,30 @@ function getMonth() {
     console.log(`Month desired: ${month}`);
     console.log(`Desired startDate: ${startDate}, desired endDate: ${endDate}`);
 
-    getTimePeriod(startDate, endDate);
+    getTimePeriod(startDate, endDate, planner);
 }
 
-function getCustom() {
+function getCustom(planner) {
     console.log("getCustom() called.");
 
     var startDate = document.getElementById("start-date").value;
     var endDate = document.getElementById("end-date").value;
     console.log(`Desired startDate: ${startDate}, desired endDate: ${endDate}`);
 
-    getTimePeriod(startDate, endDate);
+    getTimePeriod(startDate, endDate, planner);
 }
 
-function getTimePeriod(startDate, endDate) {
+function getTimePeriod(startDate, endDate, planner) {
     console.log(`getTimePeriod called. startDate: ${startDate}, endDate: ${endDate}.`);
 
-    $.get("/given-days", {startDate: startDate, endDate: endDate}, loopDaysToDisplay);
+    $.get("/given-days", {startDate: startDate, endDate: endDate}, function (result, rextStatus) {
+        if (textStatus == 200) {
+            loopDaysToDisplay(result, planner);
+        }
+    });
 }
 
-function loopDaysToDisplay(result, textStatus) {
+function loopDaysToDisplay(result, planner) {
     var date = result[0].given_day.split("T")[0];
     var formattedJSON = {date: date, activities: []};
     for (var i = 0, j = 0; i < result.length; i++, j++) {
@@ -132,17 +154,17 @@ function loopDaysToDisplay(result, textStatus) {
             formattedJSON.activities.push(activitiesJSON);
         }
         else {
-            displayResults(formattedJSON, 200);
+            displayResults(formattedJSON, planner);
             j = -1;
             date = temp.given_day.split("T")[0];
             formattedJSON = {date: date, activities: []};
         }
     }
 
-    displayResults(formattedJSON);
+    displayResults(formattedJSON, planner);
 }
 
-function displayResults(result, textStatus) {
+function displayResults(result, planner) {
     var div = document.getElementById("result");
     div.style.visibility = "visible";
 
@@ -198,4 +220,12 @@ function displayResults(result, textStatus) {
     paragraphElement.appendChild(table);
 
     div.appendChild(paragraphElement);
+
+    if (!planner) {
+        var entry = document.getElementById("journal-entry").cloneNode(true);
+        entry.children[2].value = result.activities[0].entry;
+        entry.setAttribute("id", "result-entry");
+        entry.style.visibility = "visible";
+        div.appendChild(entry);
+    }
 }

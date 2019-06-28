@@ -8,7 +8,7 @@ input, select, textarea {
 
 .navbar {
     visibility: visible;
-    background-color: #DAE8FC;
+    background-color: #29a3cc;
     overflow: hidden;
     padding-left: 0px;
     padding-right: 0px;
@@ -28,7 +28,7 @@ button.navbar {
     background-color: inherit;
     border: solid;
     border-width: 2px;
-    border-color: rgb(181, 209, 248);
+    border-color: #007399;
     width: 150px;
 }
 
@@ -46,11 +46,15 @@ a.logo {
 }
   
 a.navbar:hover, button.navbar:hover {
-    background-color: #fceeda;
+    background-color: #cc5229;
     cursor: pointer;
 }
 
 button#report-journal {
     display: flex;
     justify-content: center;
+}
+
+#output {
+    color: red;
 }

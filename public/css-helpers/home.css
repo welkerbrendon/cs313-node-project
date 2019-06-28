@@ -1,4 +1,27 @@
 p {
-    padding-right: 40%;
-    padding-top: 10%;
+    padding-top: 5%;
+    padding-bottom: 5%;
 }
+
+p.left {
+    padding-right: 40%;
+}
+
+p.right {
+    text-align: right;
+    padding-left: 40%;
+}
+
+hr {
+    border-color: #e6997f;
+}
+
+/* .color1 {
+    background-color: #e6997f;
+    background-color: #f2ccbf;
+}
+
+.color2 {
+    background-color: #7fcce6;
+    background-color: #bfe6f2;
+} */

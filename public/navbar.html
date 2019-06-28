@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="header/header.css">
+    <script src="javascript-helpers/handle-time-input.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -15,6 +16,7 @@
         <button class="navbar middle"><a href="./planner.html">Planner</a></button>
         <button class="navbar left" id="report-journal"><a href="./journal.html">Report/ Journal</a></button>
     </div>
-
+    <input type="text" maxlength="10" size="5"  onchange="handleInput(this)" placeholder="--:--">
+    <div id="output"></div>
 </body>
 </html>

@@ -19,7 +19,7 @@ function getActivityTypeNames(callback) {
     });
 }
 
-function postDayOfActivities(requestJSON, userID, callback) {
+function postDayOfActivities(requestJSON, userID, plan, callback) {
     console.log(`activities model postDayOfActivities received: ${JSON.stringify(requestJSON)}`);
 
     const dayID = `${userID}-${requestJSON.date}`;
@@ -33,12 +33,33 @@ function postDayOfActivities(requestJSON, userID, callback) {
             callback("Day already exists.", null);
         }
         else {
-            addActivities(requestJSON.activities, userID, dayID, callback);
+            addActivities(requestJSON.activities, userID, dayID, plan, callback);
         }
     });
 }
 
-function addActivities(activities, userID, dayID, callback) {
+function postJournalEntry(requestJSON, userID, callback) {
+    console.log(`activities model postJournalEntry received: ${JSON.stringify(requestJSON)}`);
+
+    const dayID = `${userID}-${requestJSON.date}`;
+    const entrySQL = `INSERT INTO journal_entry (user_id, day_id, entry, created_at, last_updated)
+                      VALUES ('${userID}', '${dayID}', '${requestJSON.entry}', now(), now())`;
+    
+    console.log(`entrySQL: ${entrySQL}`);
+
+    pool.query(entrySQL, function (err, result) {
+        if (err) {
+            console.log(`postJournalEntry error: ${err}`);
+            callback(err, null);
+        }
+        else {
+            console.log(`Successfull in postJournalEntry`);
+            callback(null, result);
+        }
+    });
+}
+
+function addActivities(activities, userID, dayID, plan, callback) {
     console.log(`addDays called with: activities=${JSON.stringify(activities)}`);
     
     if (activities.length <= 0) {
@@ -50,25 +71,34 @@ function addActivities(activities, userID, dayID, callback) {
         activities.splice(activities.length - 1);
 
         var new_uuid = uuidv1();
-        var activitySQL = `INSERT INTO activity (id, user_id, day_id,
+        var activitySQL = plan ? `INSERT INTO activity (id, user_id, day_id,
+            activity_type_id, start_time, 
+            end_time, notes, 
+            plan, last_updated, created_at)
+            VALUES ('${new_uuid}', '${userID}', '${dayID}', 
+            '${activityData.type_id}', '${activityData.start_time}', 
+            '${activityData.end_time}', 
+            '${activityData.notes}', '${plan}', 
+            now(), now())` : 
+                            `INSERT INTO activity (id, user_id, day_id,
                                                  activity_type_id, start_time, 
                                                  end_time, productive, notes, 
                                                  plan, last_updated, created_at)
-                           VALUES ('${new_uuid}', '${userID}', '${dayID}', 
+                            VALUES ('${new_uuid}', '${userID}', '${dayID}', 
                                    '${activityData.type_id}', '${activityData.start_time}', 
                                    '${activityData.end_time}', '${activityData.productive}', 
-                                   '${activityData.notes}', '${activityData.plan}, 
+                                   '${activityData.notes}', '${plan}', 
                                     now(), now())`;
         
         console.log(`activitySQL: ${activitySQL}`);
         pool.query(activitySQL, function(err, result) {
             if (err) {
-                console.log(`ERROR when adding activity`);
+                console.log(`ERROR when adding activity. Following error was given: ${err}`);
                 callback("Unable to put an activity in table.", null);
             }
             else {
                 console.log("Calling self");
-                addActivities(activities, userID, dayID, callback);
+                addActivities(activities, userID, dayID, plan, callback);
             }
         });
     }
@@ -80,21 +110,26 @@ function getDay(date, userID, plan, callback) {
     var sql = `SELECT activity.id, activity_type.type_name, 
                       activity.start_time, activity.end_time, 
                       activity.productive, activity.notes,
-                      day.journal_entry
+                      je.entry
                FROM activity
                INNER JOIN activity_type
                ON activity_type.id=activity.activity_type_id
                INNER JOIN day
                ON day.id=activity.day_id
-               AND day.given_day='${date}'
-               AND activity.user_id='${userID}'
+               AND day.user_id=activity.user_id
+               INNER JOIN journal_entry je
+               ON je.day_id=day.id
+               AND je.user_id=activity.user_id
+               WHERE activity.user_id='${userID}'
                AND activity.plan='${plan}'
+               AND day.given_day='${date}'
                ORDER BY activity.start_time ASC`;
 
     console.log(`getDay SQL statement: ${sql}`);
 
     pool.query(sql, function (err, result) {
         if (err) {
+            console.log(`ERROR getDay: ${err}`)
             callback(err, null);
         }
         else {
@@ -196,6 +231,34 @@ function getDayId(userID, given_day, callback) {
     });
 }
 
+// function postJournalEntry(userID, given_day, entry, callback) {
+//     console.log(`adding new journal entry.`);
+
+//     const journalEntrySQL = `INSERT INTO journal_entry
+//                              (user_id, 
+//                               day_id, 
+//                               entry, 
+//                               created_at, 
+//                               last_updated)
+//                              VALUES
+//                              (${userID}, 
+//                               SELECT id FROM day WHERE given_day=${given_day} AND user_id=${user_id},
+//                               ${entry},
+//                               now(),
+//                               now())`;
+
+//     console.log(`inser into journal_entry table statement: ${journalEntrySQL}`);
+
+//     pool.query(journalEntrySQL, function (err, result) {
+//         if (err) {
+//             callback(err, null);
+//         }
+//         else {
+//             callback(null, {success: true});
+//         }
+//     });
+// }
+
 module.exports = {
     getActivityTypeNames: getActivityTypeNames,
     postDayOfActivities: postDayOfActivities,
@@ -203,5 +266,6 @@ module.exports = {
     getGivenDays: getGivenDays,
     editDay: editDay,
     addActivities: addActivities,
-    getDayId: getDayId
+    getDayId: getDayId,
+    postJournalEntry: postJournalEntry
 };

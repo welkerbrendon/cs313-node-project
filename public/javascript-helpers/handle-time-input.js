@@ -14,8 +14,13 @@ function handleInput(element) {
 
 function handleCharacter(element) {
     var cleanValue = "";
+    var count = 0;
     for (var i = 0; i < element.value.length; i++) {
-        cleanValue += (!isNaN(element.value[i]) || element.value[i] == ":") ? element.value[i] : "";
+        cleanValue += ((!isNaN(element.value[i]) && element.value[i] != " ")
+                      || (element.value[i] == ":" && count < 1)) ? element.value[i] : "";
+        if (element.value[i] == ":") {
+            count++;
+        }
     }
     element.value = cleanValue;
 }

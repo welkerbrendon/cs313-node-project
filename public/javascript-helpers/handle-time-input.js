@@ -12,30 +12,26 @@ function handleInput(element) {
     }
 }
 
+function handleCharacter(element) {
+    var cleanValue = "";
+    for (var i = 0; i < element.value.length; i++) {
+        cleanValue += (!isNaN(element.value[i]) || element.value[i] == ":") ? element.value[i] : "";
+    }
+    element.value = cleanValue;
+}
+
 function handlePreFormatted(element) {
-    if (isNaN(element.value[0])) {
-        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
-    }
-    else if (isNaN(element.value[1]) && element.value[1] != ":") {
-        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
-    }
-    else if (isNaN(element.value[2]) && element.value[2] != ":") {
-        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
-    }
-    else {
-        for (var i = 3; i < element.value.length; i++) {
-            if (isNaN(element.value[i])) {
-                document.getElementById("output").innerHTML = "ERROR: Invalid time. Please enter only the numbers or follow the pattern --:--.";
-                return;
-            }
-        }
-        document.getElementById("output").innerHTML = "";
+    var hours = parseInt(element.value.split(":")[0]);
+    var minutes = parseInt(element.value.split(":")[1]);
+
+    if (hours > 12 || minutes > 59 || hours < 1 || minutes < 0) {
+        document.getElementById("output").innerHTML = "ERROR: Invalid time. Please follow format of (1-12):(00-59)";
     }
 }
 
 function handleNumOnly(element) {
     const valueAsInt = parseInt(element.value);
-    if (valueAsInt < 100 || valueAsInt > 1300 || (valueAsInt % 100 > 59) || (valueAsInt / 100 > 12)) {
+    if (valueAsInt < 100 || valueAsInt > 1300 || (valueAsInt % 100 > 59) || (parseInt(valueAsInt / 100) > 12)) {
         document.getElementById("output").innerHTML = "ERROR: Invalid time. Please input at least 3 numbers representing the hours (1-12) and minutes (00-59).";
     }
     else {
@@ -48,4 +44,45 @@ function handleNumOnly(element) {
             document.getElementById("output").innerHTML = "";
         }
     }
+}
+
+function getTime() {
+    var times = document.getElementsByName("time");
+    var amPMs = document.getElementsByName("am/pm");
+    if (times.length == amPMs.length) {
+        var output = "";
+        for (var i = 0; i < times.length; i++) {
+            output += getFullTime(times[i].value, amPMs[i].value) + "<br>";
+        }
+        document.getElementById("output").innerHTML = output;
+    }
+}
+
+function getFullTime(time, amPM) {
+    var hours = "";
+    for (var i = 0; i < time.length && time[i] != ":"; i++) {
+        hours += time[i];
+    }
+    var minutes = "";
+    for (var i = (time.indexOf(":") + 1); i < time.length; i++) {
+        minutes += time[i];
+    }
+    var hoursAsInt = parseInt(hours);
+    if (amPM == "PM") {
+        if (hoursAsInt < 12) {
+            return `${hoursAsInt + 12}:${minutes}`;
+        }
+        else {
+            return time;
+        }
+    }
+    else {
+        if (hoursAsInt == 12) {
+            return `00:${minutes}`;
+        }
+        else {
+            return time;
+        }
+    }
+
 }

@@ -51,6 +51,7 @@ function submitPlan(edit) {
                         document.getElementById("date").value = null;
                         clearTable("day-input", true);
                         resetDivs();
+                        scroll(0,0);
                     }
                 });
             }
@@ -61,6 +62,7 @@ function submitPlan(edit) {
                         document.getElementById("date").value = null;
                         clearTable("results-table", true);
                         resetDivs();
+                        scroll(0,0);
                     }
                 });
             }
@@ -79,6 +81,7 @@ function submitPlan(edit) {
                 document.getElementById("date").value = null;
                 clearTable("day-input", true);
                 resetDivs();
+                scroll(0,0);
             }
         });
     }
@@ -89,6 +92,7 @@ function submitPlan(edit) {
                 document.getElementById("date").value = null;
                 clearTable("results-table", true);
                 resetDivs();
+                scroll(0,0);
             }
         });
     }
@@ -242,6 +246,7 @@ function submitJournal(edit) {
                         document.getElementById("date").value = null;
                         clearTable("day-input", false);
                         resetDivs();
+                        scroll(0,0);
                     }
                 });
             }
@@ -252,6 +257,7 @@ function submitJournal(edit) {
                         document.getElementById("date").value = null;
                         clearTable("results-table", false);
                         resetDivs();
+                        scroll(0,0);
                     }
                 });
             }
@@ -271,6 +277,7 @@ function submitJournal(edit) {
                 clearTable("day-input", false);
                 clearTextAreas();
                 resetDivs();
+                scroll(0,0);
             }
         });
     }
@@ -282,6 +289,7 @@ function submitJournal(edit) {
                 clearTable("results-table", false);
                 clearTextAreas();
                 resetDivs();
+                scroll(0,0);
             }
         });
     }  

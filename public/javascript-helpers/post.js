@@ -1,58 +1,26 @@
-function submitPlan(edit, date = null) {
-    const day = date == null ? document.getElementById("date").value : date;
+function submitPlan(edit) {
+    edit = (edit == "true");
 
-    if(!day) {
-        document.getElementById("date-error").innerHTML = "*Please give a date for the following activities.*";
+    const day = getDay(edit);
+
+    if (day == null) {
         return;
     }
-    else {
-        document.getElementById("date-error").innerHTML = "";
-        document.getElementById("date").value = null;
-    }
 
-    const startTimeElements = edit ? document.getElementsByName("start-time-editable") :
-                                     document.getElementsByName("start-time");
-    const startTimeAMPM = edit ? document.getElementsByName("start-time-am/pm-editable"): 
-                                 document.getElementsByName("start-time-am/pm");
-    var startTimes = new Array(); 
-    for (var i = 0; i < startTimeElements.length; i++) {
-        let time = getTime(startTimeElements[i].value, startTimeAMPM[i].value);
-        if (time != null) {
-            startTimes.push(time);
-        }
-    }
-
-    const endTimeElements = edit ? document.getElementsByName("end-time-editable") :
-                                     document.getElementsByName("end-time");
-    const endTimeAMPM = edit ? document.getElementsByName("end-time-am/pm-editable"): 
-                                 document.getElementsByName("end-time-am/pm");
-    var endTimes = new Array();
-    for (var i = 0; i < endTimeElements.length; i++) {
-        let time = getTime(endTimeElements[i].value, endTimeAMPM[i].value);
-        if (time == null) {
-            endTimes.push(time);
-        }
-    }
-
-    const activityTypeElements = edit ? document.getElementsByName("activity-type-editable") :
-                                        document.getElementsByName("activity-type");
-    var activityTypes = new Array(activityTypeElements.length);
-    for (var i = 0; i < activityTypeElements.length; i++) {
-        activityTypes[i] = activityTypeElements[i].value;
-    }
-
-    const noteElements = edit ? document.getElementsByName("notes-editable") :
-                                document.getElementsByName("notes");
-    var notes = new Array(noteElements.length);
-    for (var i = 0; i < noteElements.length; i++) {
-        notes[i] = noteElements[i].value;
-    }
+    const activityIdList = edit ? getActivityIdList() : null;
+    const startTimes = getStartTimes();
+    const endTimes = getEndTimes();
+    const activityTypes = getActivityTypes();
+    const notes = getNotes();
 
     console.log(`Day: ${day}`);
     console.log(`startTimes: ${startTimes}`);
     console.log(`endTimes: ${endTimes}`);
     console.log(`activityTypes: ${activityTypes}`);
     console.log(`notes: ${notes}`);
+    if (edit) {
+        console.log(`activityIdList: ${activityIdList}`);
+    }
 
     var jsonPostData = {};
     jsonPostData.date = day;
@@ -63,24 +31,41 @@ function submitPlan(edit, date = null) {
             tempEndTime = endTimes[i];
             tempActivityType = activityTypes[i];
             tempNotes = notes[i];
+            tempActivityId = edit ? activityIdList[i] : null;
 
             jsonPostData.activities.push({
+                id: tempActivityId,
                 start_time: tempStartTime,
                 end_time: tempEndTime,
                 type_id: tempActivityType,
                 notes: tempNotes,
+                productive: null,
                 plan: true
             });
         }
         else if (startTimes[i] == "" && endTimes[i] == "" && activityTypes[i] == "") {
             console.log(JSON.stringify(jsonPostData));
 
-            $.post("/add-plan", jsonPostData, function(response, textStatus) {
-                console.log(`Response: ${JSON.stringify(response)}`);
-                if(response.success) {
-                    resetDivs();
-                }
-            });
+            if (!edit) {
+                $.post("/add-plan", jsonPostData, function(response, textStatus) {
+                    console.log(`Response: ${JSON.stringify(response)}`);
+                    if(response.success) {
+                        document.getElementById("date").value = null;
+                        clearTable("day-input");
+                        resetDivs();
+                    }
+                });
+            }
+            else {
+                $.post("/edit-day", jsonPostData, function (response, textStatus) {
+                    console.log(`Response: ${JSON.stringify(response)}`);
+                    if (response.success) {
+                        document.getElementById("date").value = null;
+                        clearTable("results-table");
+                        resetDivs();
+                    }
+                });
+            }
 
             return;
         }
@@ -89,29 +74,43 @@ function submitPlan(edit, date = null) {
             return;
         }
     }
-
-    $.post("/add-plan", jsonPostData, function(response, textStatus) {
-        console.log(`Response: ${JSON.stringify(response)}`);
-        if(response.success) {
-            resetDivs();
-        }
-    });
+    if (!edit) {
+        $.post("/add-plan", jsonPostData, function(response, textStatus) {
+            console.log(`Response: ${JSON.stringify(response)}`);
+            if(response.success) {
+                document.getElementById("date").value = null;
+                clearTable("day-input");
+                resetDivs();
+            }
+        });
+    }
+    else {
+        $.post("/edit-day", jsonPostData, function (response, textStatus) {
+            console.log(`Response: ${JSON.stringify(response)}`);
+            if (response.success) {
+                document.getElementById("date").value = null;
+                clearTable("results-table");
+                resetDivs();
+            }
+        });
+    }
 }
 
-function submitJournal(edit) {
-    edit = (edit == "true");
+function getDay(edit) {
     const day = edit ? document.getElementById("date-to-edit").value : document.getElementById("date").value;
-    const journalEntry = edit ? document.getElementById("result-entry").children[2].value: document.getElementById("journal-entry").children[2].value;
 
     if(!day) {
         document.getElementById("date-error").innerHTML = "*Please give a date for the following activities.*";
-        return;
+        return null;
     }
     else {
         document.getElementById("date-error").innerHTML = "";
+        return day;
     }
+}
 
-    var temp = edit ? document.getElementsByName("table-rows") : null;
+function getActivityIdList() {
+    var temp = document.getElementsByName("table-rows");
     var activityIdList = Array();
     if (temp != null) {
         for (var i = 1; i < temp.length; i++) {
@@ -119,8 +118,10 @@ function submitJournal(edit) {
         }
     }
 
-    var ignoreList = new Array();
+    return activityIdList;
+}
 
+function getStartTimes() {
     const startTimeElements = document.getElementsByName("start-time");
     const startTimeAMPM = document.getElementsByName("start-time-am/pm");
     var startTimes = new Array(); 
@@ -131,6 +132,10 @@ function submitJournal(edit) {
         }
     }
 
+    return startTimes;
+}
+
+function getEndTimes() {
     const endTimeElements = document.getElementsByName("end-time");
     const endTimeAMPM = document.getElementsByName("end-time-am/pm");
     var endTimes = new Array();
@@ -141,6 +146,10 @@ function submitJournal(edit) {
         }
     }
 
+    return endTimes;
+}
+
+function getProductiveValues() {
     const productiveElements = document.getElementsByClassName("productive");
     var productive = new Array();
     for (var i = 0, j = 0; i < productiveElements.length; i += 2, j++) {
@@ -152,6 +161,10 @@ function submitJournal(edit) {
         }
     }
 
+    return productive;
+}
+
+function getActivityTypes() {
     const activityTypeElements = document.getElementsByName("activity-type");
     var activityTypes = new Array();
     for (var i = 0; i < activityTypeElements.length; i++) {
@@ -159,7 +172,10 @@ function submitJournal(edit) {
             activityTypes.push(activityTypeElements[i].value);
         }
     }
+    return activityTypes;
+}
 
+function getNotes() {
     const noteElements = document.getElementsByName("notes");
     var notes = new Array();
     for (var i = 0; i < noteElements.length; i++) {
@@ -167,6 +183,25 @@ function submitJournal(edit) {
             notes.push(noteElements[i].value);
         }
     }
+    return notes;
+}
+
+function submitJournal(edit) {
+    edit = (edit == "true");
+
+    const day = getDay(edit);
+
+    if (day == null) {
+        return;
+    }
+
+    const journalEntry = edit ? document.getElementById("result-entry").children[2].value: document.getElementById("journal-entry").children[2].value;
+    const activityIdList = edit ? getActivityIdList() : null;
+    const startTimes = getStartTimes();
+    const endTimes = getEndTimes();
+    const productive = getProductiveValues();
+    const activityTypes = getActivityTypes();
+    const notes = getNotes();
 
     console.log(`Day: ${day}`);
     console.log(`startTimes: ${startTimes}`);
@@ -174,6 +209,9 @@ function submitJournal(edit) {
     console.log(`productive: ${productive}`);
     console.log(`activityTypes: ${activityTypes}`);
     console.log(`notes: ${notes}`);
+    if (edit) {
+        console.log(`activityIdList: ${activityIdList}`);
+    }
 
     var jsonPostData = {};
     jsonPostData.date = day;

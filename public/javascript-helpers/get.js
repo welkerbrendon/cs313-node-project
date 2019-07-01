@@ -75,12 +75,13 @@ function getDateInputView() {
 
     resetDivs();
 
-    document.getElementById("time-period-selection").style.visibility="visible";
+    document.getElementById("time-input").style.visibility="visible";
 }
 
 function getDateInputEdit() {
     console.log("date input edit");
 
+    clearTable("day-input");
     resetDivs();
 
     document.getElementById("edit").style.visibility = "visible";

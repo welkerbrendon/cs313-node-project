@@ -1,5 +1,6 @@
 button {
     font-size: 23px;
+    cursor: pointer;
 }
 
 button.main {
@@ -26,16 +27,7 @@ button.addRow, button.deleteRow, button.clear, button.submit {
     border-radius: 5px;
     border: solid;
     border-width: 1px;
-}
-
-button.addRow, button.submit {
-    /* background-color: #e64900; */
-    background-color: #e60f00;
-}
-
-button.deleteRow, button.clear {
-    /* background-color: #e60f00; */
-    background-color: #e64900;
+    background-color: #e64900;;
 }
 
 button.addRow, button.submit {

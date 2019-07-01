@@ -1,4 +1,4 @@
-function getHistory(planner) {
+function getHistory(planner, edit) {
     var radioButtons = document.getElementsByName("time-period");
     var selectedValue = null;
     for (var i = 0; i < radioButtons.length; i++) {
@@ -8,31 +8,28 @@ function getHistory(planner) {
     }
     console.log(`selected button value: ${selectedValue}`);
 
-    var div = document.getElementById("result");
-    while (div.firstChild) {
-        div.removeChild(div.firstChild);
-    }
+    
 
     switch (selectedValue) {
         case "most-recent":
-            getMostRecentDay(planner);
+            getMostRecentDay(planner, edit);
             break;
         case "day":
-            getDay(planner);
+            getDay(planner, edit);
             break;
         case "week":
-            getWeek(planner);
+            getWeek(planner, edit);
             break;
         case "month":
-            getMonth(planner);
+            getMonth(planner, edit);
             break;
         case "custom":
-            getCustom(planner);
+            getCustom(planner, edit);
             break;
     }
 }
 
-function getMostRecentDay(planner) {
+function getMostRecentDay(planner, edit) {
     console.log("getMostRecentDay() called.");
 
     var date = new Date();
@@ -42,34 +39,39 @@ function getMostRecentDay(planner) {
     if (planner) {
         $.get("/most-recent-day", {date: dateString}, function (result, textStatus) {
             if (textStatus == "success") {
-                displayResults(result, planner);
+                displayResults(result, planner, edit);
             }
         });
     }
 }
 
-function getDay(planner) {
+function getDay(planner, edit) {
     console.log("getDay() called.");
 
-    var date = document.getElementById("day").value;
+    var div = document.getElementById("result");
+    while (div.firstChild) {
+        div.removeChild(div.firstChild);
+    }
+
+    var date = edit ? document.getElementById("date-to-edit").value : document.getElementById("day").value;
     console.log(`Date desired: ${date}`);
     if (planner) {
         $.get("/planned-day", {date: date}, function (result, textStatus) {
             if (textStatus == "success") {
-                displayResults(result, planner);
+                displayResults(result, planner, edit);
             }
         });
     }
     else {
         $.get("/journal-day", {date: date}, function (result, textStatus) {
             if (textStatus == "success") {
-                displayResults(result, planner);
+                displayResults(result, planner, edit);
             }
         });
     }
 }
 
-function getWeek(planner) {
+function getWeek(planner, edit) {
     console.log("getWeek() called.");
 
     var startDate = new Date(document.getElementById("day").value);
@@ -85,10 +87,10 @@ function getWeek(planner) {
 
     console.log(`desired startDate: ${startDateString}, calculated endDate: ${endDateString}`);
 
-    getTimePeriod(startDateString, endDateString, planner);
+    getTimePeriod(startDateString, endDateString, planner, edit);
 }
 
-function getMonth(planner) {
+function getMonth(planner, edit) {
     console.log("getMonth() called.");
 
     var monthDate = document.getElementById("month").value;
@@ -115,10 +117,10 @@ function getMonth(planner) {
     console.log(`Month desired: ${month}`);
     console.log(`Desired startDate: ${startDate}, desired endDate: ${endDate}`);
 
-    getTimePeriod(startDate, endDate, planner);
+    getTimePeriod(startDate, endDate, planner, edit);
 }
 
-function getCustom(planner) {
+function getCustom(planner, edit) {
     console.log("getCustom() called.");
 
     var startDate = document.getElementById("start-date").value;
@@ -133,12 +135,12 @@ function getTimePeriod(startDate, endDate, planner) {
 
     $.get("/given-days", {startDate: startDate, endDate: endDate}, function (result, rextStatus) {
         if (textStatus == 200) {
-            loopDaysToDisplay(result, planner);
+            loopDaysToDisplay(result, planner, edit);
         }
     });
 }
 
-function loopDaysToDisplay(result, planner) {
+function loopDaysToDisplay(result, planner, edit) {
     var date = result[0].given_day.split("T")[0];
     var formattedJSON = {date: date, activities: []};
     for (var i = 0, j = 0; i < result.length; i++, j++) {
@@ -154,18 +156,29 @@ function loopDaysToDisplay(result, planner) {
             formattedJSON.activities.push(activitiesJSON);
         }
         else {
-            displayResults(formattedJSON, planner);
+            displayResults(formattedJSON, planner, edit);
             j = -1;
             date = temp.given_day.split("T")[0];
             formattedJSON = {date: date, activities: []};
         }
     }
 
-    displayResults(formattedJSON, planner);
+    displayResults(formattedJSON, planner, edit);
 }
 
-function displayResults(result, planner) {
+function displayResults(result, planner, edit) {
     var div = document.getElementById("result");
+
+    if (edit) {
+        var addRow = document.getElementById("addRow").cloneNode(true);
+        addRow.setAttribute("onclick", "addRow('results-table')");
+        div.appendChild(addRow);
+
+        var deleteRow = document.getElementById("deleteRow").cloneNode(true);
+        deleteRow.setAttribute("onclick", `deleteRow('results-table', ${result.activities.length})`);
+        div.appendChild(deleteRow);
+    }
+
     div.style.visibility = "visible";
 
     var monthNames = ["", "January", "February", "March", "April", "May",
@@ -188,29 +201,34 @@ function displayResults(result, planner) {
     for (var i = 0; i < activities.length; i++) {
         var singleActivity = activities[i];
         var tableRow = globalTableRow.cloneNode(true);
+        tableRow.setAttribute("value", singleActivity.id);
         var individualColumns = tableRow.children;
         for (var j = 0; j < individualColumns.length; j++) {
             var column = individualColumns[j];
             var id = column.getAttribute('id');
-            var newInnerHTMLValue = id == "start-time-column" ? singleActivity.start_time :
-                                    id == "end-time-column" ? singleActivity.end_time :
-                                    id == "productive-column" ? singleActivity.productive :
-                                    id == "activity-type-column" ? singleActivity.type_name :
-                                    id == "notes-column" ? singleActivity.notes : null;
-            
-            column.setAttribute("value", newInnerHTMLValue);
-            if (id == "start-time-column" || id == "end-time-column") {
-                var time = newInnerHTMLValue.split(":");
-
-                var hour = parseInt(time[0]);
-                var timeOfDay = hour < 12 || hour == 24 ? " am" : " pm";
-                hour = hour == 0 ? 12 :
-                       hour > 12 ? hour - 12 : hour;
-
-                newInnerHTMLValue = hour.toString() + ":" + time[1] + timeOfDay
+            var value = id == "start-time-column" ? singleActivity.start_time :
+                        id == "end-time-column" ? singleActivity.end_time :
+                        id == "productive-column" ? singleActivity.productive :
+                        id == "activity-type-column" ? singleActivity.type_name :
+                        id == "notes-column" ? singleActivity.notes : null;
+            if (edit) {
+                setInputElements(column, id, value, i);
             }
-            column.innerHTML = newInnerHTMLValue;
-            column.setAttribute("align", "center")
+            else {
+                column.setAttribute("value", value);
+                if (id == "start-time-column" || id == "end-time-column") {
+                    var time = value.split(":");
+
+                    var hour = parseInt(time[0]);
+                    var timeOfDay = hour < 12 || hour == 24 ? " AM" : " PM";
+                    hour = hour == 0 ? 12 :
+                        hour > 12 ? hour - 12 : hour;
+
+                    value = hour.toString() + ":" + time[1] + timeOfDay;
+                }
+                column.innerHTML = value;
+                column.setAttribute("align", "center");
+            }
         }
 
         table.appendChild(tableRow);
@@ -226,6 +244,61 @@ function displayResults(result, planner) {
         entry.children[2].value = result.activities[0].entry;
         entry.setAttribute("id", "result-entry");
         entry.style.visibility = "visible";
+        if (!edit) {
+            entry.children[2].readOnly = true;
+        }
         div.appendChild(entry);
+    }
+
+    if (edit) {
+        var submit = document.getElementById("submit").cloneNode(true);
+        if (planner) {
+            submit.setAttribute("onclick", `submitPlan('true', ${result.date})`);
+        }
+        else {
+            submit.setAttribute("onclick", `submitJournal('true', ${result.date})`);
+        }
+        div.appendChild(submit);
+
+        var clear = document.getElementById("clear").cloneNode(true);
+        clear.setAttribute("onclick", "clearTable('results-table')");
+        div.appendChild(clear);
+    }
+}
+
+function setInputElements(column, id, value, i) {
+    if (id == "start-time-column" || id == "end-time-column") {
+        var time = value.split(":");
+
+        var hour = parseInt(time[0]);
+        var timeOfDay = hour < 12 || hour == 24 ? "AM" : "PM";
+        hour = hour == 0 ? 12 :
+            hour > 12 ? hour - 12 : hour;
+
+        var timeValue = hour.toString() + ":" + time[1];
+        column.children[0].value = timeValue;
+        column.children[1].value = timeOfDay;
+    }
+    else if (id == "productive-column") {
+        column.children[0].setAttribute("name", (column.children[0].getAttribute("name") + i));
+        column.children[2].setAttribute("name", (column.children[2].getAttribute("name") + i));
+
+        if (value) {
+            column.children[0].checked = true;
+        }
+        else {
+            column.children[2].checked = true;
+        }
+    }
+    else if (id == "notes-column") {
+        column.children[0].value = value;
+    }
+    else if (id == "activity-type-column") {
+        addActivityTypes(column.children[0]);
+        $.get("/activity-type/id", {name: value}, function (result, status) {
+            if (status == "success") {
+                column.children[0].value = result.type_id;
+            }
+        });
     }
 }

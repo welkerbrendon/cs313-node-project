@@ -21,21 +21,43 @@ function getActivityTypeNames(callback) {
 
 function postDayOfActivities(requestJSON, userID, plan, callback) {
     console.log(`activities model postDayOfActivities received: ${JSON.stringify(requestJSON)}`);
-
-    const dayID = `${userID}-${requestJSON.date}`;
-    const daySQL = `INSERT INTO day (id, given_day, user_id, last_updated, created_at)
-                 VALUES ('${dayID}', '${requestJSON.date}', '${userID}', now(), now())`;
-
-    console.log(`daySQL: ${daySQL}`);
-
-    pool.query(daySQL, function(err, result) {
-        if (err) {
-            callback("Day already exists.", null);
-        }
-        else {
+    
+    dayAlreadyExists(userID, requestJSON.date, function (alreadyExists) {
+        if (alreadyExists) {
             addActivities(requestJSON.activities, userID, dayID, plan, callback);
         }
+        else {
+            const dayID = `${userID}-${requestJSON.date}`;
+            const daySQL = `INSERT INTO day (id, given_day, user_id, last_updated, created_at)
+                        VALUES ('${dayID}', '${requestJSON.date}', '${userID}', now(), now())`;
+
+            console.log(`daySQL: ${daySQL}`);
+
+            pool.query(daySQL, function(err, result) {
+                if (err) {
+                    callback(err, null);
+                }
+                else {
+                    addActivities(requestJSON.activities, userID, dayID, plan, callback);
+                }
+            });
+        }
     });
+}
+
+function dayAlreadyExists(userID, date, callback) {
+    console.log(`checking if day ${date} already exists for user ${userID}`);
+    var sql = `SELECT id FROM day WHERE user_id='${userID}' AND given_day='${date}'`;
+    console.log(`dayAlreadyExists query: ${sql}`);
+
+    pool.query(sql, function (err, result) {
+        if (err) {
+            callback(false);
+        }
+        else {
+            callback(result.rowCount > 0);
+        }
+    })
 }
 
 function postJournalEntry(requestJSON, userID, callback) {
@@ -174,41 +196,174 @@ function getGivenDays(startDate, endDate, userID, plan, callback) {
     });
 }
 
-function editDay(request, callback) {
+function editDay(request, userID, date, callback) {
     console.log("Successfully called editDay in model/activities.js");
     console.log(`Request received in activities model editDay: ${JSON.stringify(request)}`);
+    console.log(`userID: ${userID}, date:${date}`);
 
     var activity = request[request.length - 1];
     request.splice(request.length - 1);
     if (activity != null) {
-        var sql = `UPDATE activity
-                    SET activity_type_id='${activity.type_id}', 
-                        start_time='${activity.start_time}',
-                        end_time='${activity.end_time}',
-                        productive='${activity.productive}',
-                        notes='${activity.notes}',
-                        last_updated=now()
-                    WHERE id='${activity.id}'`;
-        console.log(`editDay SQL statement: ${sql}`);
-         
-        pool.query(sql, function (err, result) {
-            if (err) {
-                console.log(`ERROR: ${err}`);
-                callback(err, null);
+        activityExists(activity.id, function (alreadyExists) {
+            var sql;
+            if (alreadyExists && activity.id != "") {
+                console.log(`activity with id: ${activity.id} already exisits. Updating it now.`);
+                sql = `UPDATE activity
+                            SET activity_type_id='${activity.type_id}', 
+                                start_time='${activity.start_time}',
+                                end_time='${activity.end_time}',
+                                productive='${activity.productive}',
+                                notes='${activity.notes}',
+                                last_updated=now()
+                            WHERE id='${activity.id}'`;
+
+                console.log(`editDay SQL statement: ${sql}`);
+
+                pool.query(sql, function (err, result) {
+                    if (err) {
+                        console.log(`ERROR: ${err}`);
+                        callback(err, null);
+                    }
+                    else {
+                        editDay(request, userID, date, callback);
+                    }
+                });
             }
             else {
-                editDay(request, callback);
+                console.log(`activity does not exist with id:${activity.id}`);
+                duplicateActivity(activity, userID, date, function (duplicate) {
+                    if (!duplicate) {
+                        console.log("not a duplicate.")
+                        var new_uuid = uuidv1();
+                        const dayID = `${userID}-${date}`;
+                        sql = `INSERT INTO activity (id, user_id, day_id,
+                                                activity_type_id, start_time, 
+                                                end_time, notes, productive, 
+                                                plan, last_updated, created_at)
+                            VALUES ('${new_uuid}', '${userID}', '${dayID}', 
+                                    '${activity.type_id}', '${activity.start_time}',
+                                    '${activity.end_time}', '${activity.notes}', 
+                                    '${activity.productive}', '${activity.plan}', 
+                                    now(), now())`;
+
+                        console.log(`editDay SQL statement: ${sql}`);
+
+                        pool.query(sql, function (err, result) {
+                            if (err) {
+                                console.log(`ERROR: ${err}`);
+                                callback(err, null);
+                            }
+                            else {
+                                editDay(request, userID, date, callback);
+                            }
+                        });
+                    }
+                    else {
+                        editDay(request, userID, date, callback);
+                    }
+                });
             }
         });
     }
     else {
         if (request.length > 0) {
-            editDay(request, callback);
+            editDay(request, userID, date, callback);
         }
         else {
             callback(null, {success: true});
         }
     }
+}
+
+function activityExists(id, callback) {
+    console.log(`checking if activity already exists with id: ${id}`);
+
+    const checkSQL = `SELECT id FROM activity WHERE id='${id}'`;
+    pool.query(checkSQL, function (err, result) {
+        if (err) {
+            console.log(`activityExists: ${err}`);
+            callback(true);
+        }
+        else {
+            console.log(`Result from activityExists query:
+            
+            ${JSON.stringify(result)}
+            
+            length: ${result.rows.length}
+            `);
+            var returnValue = result.rowCount > 0;
+            callback(returnValue);
+        }
+    })
+}
+
+function duplicateActivity(activity, userID, date, callback) {
+    console.log(`checking if received duplicate activity with given activity: ${JSON.stringify(activity)}`);
+    
+    var sql = `SELECT id FROM activity
+               WHERE activity_type_id='${activity.type_id}'
+               AND user_id='${userID}'
+               AND start_time='${activity.start_time}'
+               AND end_time='${activity.end_time}'
+               AND notes='${activity.notes}'
+               AND productive='${activity.productive}'
+               AND plan='${activity.plan}'
+               AND day_id='${userID + '-' + date}'`;
+    console.log(`duplicateActivity query: ${sql}`);
+
+    pool.query(sql, function (err, result) {
+        if (err) {
+            console.log(`duplicateActivity ERROR: ${err}`);
+            callback(true);
+        }
+        else {
+            console.log(`duplicateActivity result: ${result}`);
+            callback(result.rowCount != 0);
+        }
+    })
+}
+
+function editJournalEntry(entry, userID, date, callback) {
+    checkIfJournalEntryExists(userID, date, function (alreadyExists) {
+        var sql;
+        if (alreadyExists) {
+            console.log("Entry already exists. Updating it now.");
+            sql = `UPDATE journal_entry
+                   SET entry='${entry}', last_updated=now()
+                   WHERE user_id='${userID}'
+                   AND day_id='${userID + '-' + date}'`;
+        }
+        else {
+            console.log("Entry does not exist. Making new one now.");
+            sql = `INSERT INTO journal_entry (user_id, day_id, entry, last_updated, created_at)
+                   VALUES ('${userID}', '${userID + '-' + date}', '${entry}', now(), now()})`;
+        }
+        console.log(`editJournalEntry making following query: ${sql}`);
+
+        pool.query(sql, function (err, result) {
+            if (err) {
+                console.log(`editJournalEntry ERROR: ${err}`);
+                callback(err, null);
+            }
+            else {
+                callback(null, {success: true});
+            }
+        });
+    });
+}
+
+function checkIfJournalEntryExists(userID, date, callback) {
+    console.log(`Checking if journal entry exists for user: ${userID}
+                 on day: ${date}.`);
+    var sql = `SELECT id FROM journal_entry WHERE user_id='${userID}' AND day_id='${userID + '-' + date}'`;
+    pool.query(sql, function (err, result) {
+        if (err) {
+            callback(false);
+        }
+        else {
+            callback(result.rowCount > 0);
+        }
+    });
 }
 
 function getDayId(userID, given_day, callback) {
@@ -229,6 +384,23 @@ function getDayId(userID, given_day, callback) {
             callback(null, result.rows[0]);
         }
     });
+}
+
+function getActivityTypeId(name, callback) {
+    console.log("getActivityType called.");
+
+    var typeSQL = `SELECT id FROM activity_type WHERE type_name='${name}' AND universal='true'`;
+    console.log(`typeSQL: ${typeSQL}`);
+
+    pool.query(typeSQL, function (err, result) {
+        if (err) {
+            console.log(`ERROR: ${err}`);
+            callback(err, null);
+        }
+        else {
+            callback(null, result.rows[0]);
+        }
+    })
 }
 
 // function postJournalEntry(userID, given_day, entry, callback) {
@@ -267,5 +439,7 @@ module.exports = {
     editDay: editDay,
     addActivities: addActivities,
     getDayId: getDayId,
-    postJournalEntry: postJournalEntry
+    postJournalEntry: postJournalEntry,
+    getActivityTypeId: getActivityTypeId,
+    editJournalEntry: editJournalEntry
 };

@@ -17,6 +17,7 @@
     <script src="./javascript-helpers/day-to-edit.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="./header/header.js"></script>
+    <script src="javascript-helpers/handle-time-input.js"></script>
     
     <title>Home</title>
 </head>
@@ -36,10 +37,10 @@
         <div id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
             <p>
-                <button class="addRow" onclick="addRow('day-input')">Add Row</button>
-                <button class="deleteRow" onclick="deleteRow('day-input', 1)">Delete Row</button>
+                <button class="addRow" id="addRow" onclick="addRow('day-input')">Add Row</button>
+                <button class="deleteRow" id="deleteRow" onclick="deleteRow('day-input', 1)">Delete Row</button>
             </p>
-            <table id="day-input" border=1 style="width:100%">
+            <table id="day-input" class="input-table" border=1 style="width:100%">
                 <tr id="table-headers">
                     <th>Start Time</th>
                     <th>End Time</th>
@@ -47,12 +48,20 @@
                     <th>Activity Type</th>
                     <th>Notes</th>
                 </tr>
-                <tr id="table-row">
+                <tr id="table-row" name="table-rows">
                     <td id="start-time-column">
-                        <input type="time" name="start-time">
+                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="start-time">
+                        <select id="am/pm" name="start-time-am/pm">
+                            <option value='AM'>AM</option>
+                            <option value='PM'>PM</option>
+                        </select>
                     </td>
                     <td id="end-time-column">
-                        <input type="time" name="end-time">
+                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="end-time">
+                        <select id="am/pm" name="end-time-am/pm">
+                            <option value='AM'>AM</option>
+                            <option value='PM'>PM</option>
+                        </select>
                     </td>
                     <td id="productive-column">
                         <input type="radio" name="productive" class="productive" value="True">True<br>
@@ -60,7 +69,7 @@
                     </td>
                     <td id="activity-type-column">
                         <select id="activity-type" name="activity-type">
-                            <option value='' selected disabled hidden>--Choose Activity Type--</option>
+                            <option value='' selected disabled hidden>--Choose Type--</option>
                         </select>
                     </td>
                     <td id="notes-column">
@@ -73,34 +82,25 @@
                 <textarea rows="8" cols="99999" style="width:100%" id="textarea"></textarea>
             </div>
             <p id="input-error"></p>
-            <button class="submit" onclick="submitJournal()">Submit</button>
-            <button class="clear" onclick="clearTable('day-input')">Clear</button>
+            <button class="submit" id="submit" onclick="submitJournal('false')">Submit</button>
+            <button class="clear" id="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
-        <p>
-            <div id="time-period-selection">
-                <input type="radio" name="time-period" onclick="clearTimeInput()" value="most-recent">Most Recent Day<br>
-                <input type="radio" name="time-period" onclick="day('time-input')" value="day">Selected Day<br>
-                <input type="radio" name="time-period" onclick="week()" value="week">Past Week<br>
-                <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
-                <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
-                <div id="time-input"></div>
-                <button onclick="getHistory(false)">Submit</button>
-                <div id="result"></div>
-            </div>
-        </p>
-        <div id="parent-edit">
-            <div id="edit">
-                <p>
-                    Day to edit: <input type="date" id="date-to-edit"><br>
-                    <button onclick="getDayToEdit()">Edit</button>
-                </p>
-            </div>
-            <p id="table-editors">
+        <div id="time-input">
+            <label for="day">Select Day: </label>
+            <input type="date" id="day"><br>
+            <button onclick="getDay(false, false)">Submit</button>
+        </div>
+        <div id="edit">
+            <label for="date-to-edit">Day to edit: </label>
+            <input type="date" id="date-to-edit"><br>
+            <button onclick="getDay(false, true)">Edit</button>
+            <!-- <p id="table-editors">
                     <button onclick="addRow('day-edit')">Add Row</button>
                     <button id="delete-row">Delete Row</button>
                     <button onclick="clearTable('day-edit')">Clear Activities</button>
-            </p>
+            </p> -->
         </div>
+        <div id="result"></div>
     </div>
 </body>
 </html>

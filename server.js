@@ -36,6 +36,7 @@ app.get("/most-recent-planned-day", activitiesController.getMostRecentDay);
 app.get("/planned-day", activitiesController.getPlannedDay);
 app.get("/journal-day", activitiesController.getJournalDay);
 app.get("/given-days", activitiesController.getGivenDays);
+app.get("/activity-type/id", activitiesController.getActivityTypeId);
 
 app.listen(port, function() {
     console.log("Listening on port: " + port);

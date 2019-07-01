@@ -1,5 +1,5 @@
-function submitPlan() {
-    const day = document.getElementById("date").value;
+function submitPlan(edit, date = null) {
+    const day = date == null ? document.getElementById("date").value : date;
 
     if(!day) {
         document.getElementById("date-error").innerHTML = "*Please give a date for the following activities.*";
@@ -10,25 +10,39 @@ function submitPlan() {
         document.getElementById("date").value = null;
     }
 
-    const startTimeElements= document.getElementsByName("start-time");
-    var startTimes = new Array(startTimeElements.length); 
+    const startTimeElements = edit ? document.getElementsByName("start-time-editable") :
+                                     document.getElementsByName("start-time");
+    const startTimeAMPM = edit ? document.getElementsByName("start-time-am/pm-editable"): 
+                                 document.getElementsByName("start-time-am/pm");
+    var startTimes = new Array(); 
     for (var i = 0; i < startTimeElements.length; i++) {
-        startTimes[i] = startTimeElements[i].value;
+        let time = getTime(startTimeElements[i].value, startTimeAMPM[i].value);
+        if (time != null) {
+            startTimes.push(time);
+        }
     }
 
-    const endTimeElements = document.getElementsByName("end-time");
-    var endTimes = new Array(endTimeElements.length);
+    const endTimeElements = edit ? document.getElementsByName("end-time-editable") :
+                                     document.getElementsByName("end-time");
+    const endTimeAMPM = edit ? document.getElementsByName("end-time-am/pm-editable"): 
+                                 document.getElementsByName("end-time-am/pm");
+    var endTimes = new Array();
     for (var i = 0; i < endTimeElements.length; i++) {
-        endTimes[i] = endTimeElements[i].value;
+        let time = getTime(endTimeElements[i].value, endTimeAMPM[i].value);
+        if (time == null) {
+            endTimes.push(time);
+        }
     }
 
-    const activityTypeElements = document.getElementsByName("activity-type");
+    const activityTypeElements = edit ? document.getElementsByName("activity-type-editable") :
+                                        document.getElementsByName("activity-type");
     var activityTypes = new Array(activityTypeElements.length);
     for (var i = 0; i < activityTypeElements.length; i++) {
         activityTypes[i] = activityTypeElements[i].value;
     }
 
-    const noteElements = document.getElementsByName("notes");
+    const noteElements = edit ? document.getElementsByName("notes-editable") :
+                                document.getElementsByName("notes");
     var notes = new Array(noteElements.length);
     for (var i = 0; i < noteElements.length; i++) {
         notes[i] = noteElements[i].value;
@@ -84,9 +98,10 @@ function submitPlan() {
     });
 }
 
-function submitJournal() {
-    const day = document.getElementById("date").value;
-    const journalEntry = document.getElementById("textarea").value;
+function submitJournal(edit) {
+    edit = (edit == "true");
+    const day = edit ? document.getElementById("date-to-edit").value : document.getElementById("date").value;
+    const journalEntry = edit ? document.getElementById("result-entry").children[2].value: document.getElementById("journal-entry").children[2].value;
 
     if(!day) {
         document.getElementById("date-error").innerHTML = "*Please give a date for the following activities.*";
@@ -96,42 +111,61 @@ function submitJournal() {
         document.getElementById("date-error").innerHTML = "";
     }
 
-    const startTimeElements= document.getElementsByName("start-time");
-    var startTimes = new Array(startTimeElements.length); 
+    var temp = edit ? document.getElementsByName("table-rows") : null;
+    var activityIdList = Array();
+    if (temp != null) {
+        for (var i = 1; i < temp.length; i++) {
+            activityIdList.push(temp[i].getAttribute("value"));
+        }
+    }
+
+    var ignoreList = new Array();
+
+    const startTimeElements = document.getElementsByName("start-time");
+    const startTimeAMPM = document.getElementsByName("start-time-am/pm");
+    var startTimes = new Array(); 
     for (var i = 0; i < startTimeElements.length; i++) {
-        startTimes[i] = startTimeElements[i].value;
+        var time = getTime(startTimeElements[i].value, startTimeAMPM[i].value);
+        if (time != null) {
+            startTimes.push(time);
+        }
     }
 
     const endTimeElements = document.getElementsByName("end-time");
-    var endTimes = new Array(endTimeElements.length);
+    const endTimeAMPM = document.getElementsByName("end-time-am/pm");
+    var endTimes = new Array();
     for (var i = 0; i < endTimeElements.length; i++) {
-        endTimes[i] = endTimeElements[i].value;
+        var time = getTime(endTimeElements[i].value, endTimeAMPM[i].value);
+        if (time != null) {
+            endTimes.push(time);
+        }
     }
 
     const productiveElements = document.getElementsByClassName("productive");
-    var productive = new Array(productiveElements.length / 2);
+    var productive = new Array();
     for (var i = 0, j = 0; i < productiveElements.length; i += 2, j++) {
         if(productiveElements[i].checked) {
-            productive[j] = productiveElements[i].value;
+            productive.push(productiveElements[i].value);
         }
         else if (productiveElements[i + 1].checked) {
-            productive[j] = productiveElements[i + 1].value;
-        }
-        else {
-            productive[j] = null;
+            productive.push(productiveElements[i + 1].value);
         }
     }
 
     const activityTypeElements = document.getElementsByName("activity-type");
-    var activityTypes = new Array(activityTypeElements.length);
+    var activityTypes = new Array();
     for (var i = 0; i < activityTypeElements.length; i++) {
-        activityTypes[i] = activityTypeElements[i].value;
+        if (activityTypeElements[i].value != "" && activityTypeElements[i] != null) {
+            activityTypes.push(activityTypeElements[i].value);
+        }
     }
 
     const noteElements = document.getElementsByName("notes");
-    var notes = new Array(noteElements.length);
+    var notes = new Array();
     for (var i = 0; i < noteElements.length; i++) {
-        notes[i] = noteElements[i].value;
+        if (noteElements[i].value != "" && noteElements[i].value != null) {
+            notes.push(noteElements[i].value);
+        }
     }
 
     console.log(`Day: ${day}`);
@@ -151,26 +185,42 @@ function submitJournal() {
             tempEndTime = endTimes[i];
             tempProductive = productive[i];
             tempActivityType = activityTypes[i];
-            tempNotes = notes[i];
+            tempNotes = notes.length > i ? notes[i] : null;
+            tempActivityId = edit ? activityIdList[i] : null;
 
             jsonPostData.activities.push({
                 start_time: tempStartTime,
                 end_time: tempEndTime,
                 productive: tempProductive,
                 type_id: tempActivityType,
-                notes: tempNotes
+                notes: tempNotes,
+                id: tempActivityId,
+                plan: false
             });
         }
         else if (startTimes[i] == "" && endTimes[i] == "" && productive[i] == null && activityTypes[i] == "") {
             console.log(JSON.stringify(jsonPostData));
 
-            $.post("/add-journal-entry", jsonPostData, function(response, textStatus) {
-                console.log(`Response: ${JSON.stringify(response)}`);
-                if(response.success) {
-                    resetDivs();
-                    document.getElementById("date").value = null;
-                }
-            });
+            if (!edit) {
+                $.post("/add-journal-entry", jsonPostData, function(response, textStatus) {
+                    console.log(`Response: ${JSON.stringify(response)}`);
+                    if(response.success) {
+                        document.getElementById("date").value = null;
+                        clearTable("day-input");
+                        resetDivs();
+                    }
+                });
+            }
+            else {
+                $.post("/edit-day", jsonPostData, function(response, textStatus) {
+                    console.log(`Response: ${JSON.stringify(response)}`);
+                    if(response.success) {
+                        document.getElementById("date").value = null;
+                        clearTable("results-table");
+                        resetDivs();
+                    }
+                });
+            }
             return;
         }
         else {
@@ -179,12 +229,33 @@ function submitJournal() {
         }
     }
 
-    $.post("/add-journal-entry", jsonPostData, function(response, textStatus) {
-        console.log(`Response: ${JSON.stringify(response)}`);
-        if(response.success) {
-            resetDivs();
-            document.getElementById("date").value = null;
-        }
-    });
-    
+    if (!edit) {
+        $.post("/add-journal-entry", jsonPostData, function(response, textStatus) {
+            console.log(`Response: ${JSON.stringify(response)}`);
+            if(response.success) {
+                document.getElementById("date").value = null;
+                clearTable("day-input");
+                clearTextAreas();
+                resetDivs();
+            }
+        });
+    }
+    else {
+        $.post("/edit-day", jsonPostData, function(response, textStatus) {
+            console.log(`Response: ${JSON.stringify(response)}`);
+            if(response.success) {
+                document.getElementById("date").value = null;
+                clearTable("results-table");
+                clearTextAreas();
+                resetDivs();
+            }
+        });
+    }  
+}
+
+function clearTextAreas() {
+    var textareaList = document.getElementsByTagName("textarea");
+    for (var i = 0; i < textareaList.length; i++) {
+        textareaList[i].value = "";
+    }
 }

@@ -130,44 +130,46 @@ function editDay(request, response) {
     console.log("Successfully called editDay in controllers/activities.js");
     console.log(`Request body params: ${JSON.stringify(request.body)}`);
 
-    var newActivities = [];
-    var existingActivities = [];
-    for (var i = 0; i < request.body.activities.length; i++) {
-        var tempActivity = request.body.activities[i];
-        if (tempActivity.id == "table-row") {
-            newActivities.push(tempActivity);
+    console.log(`Calling model editDay with 
+    
+    activities:${JSON.stringify(request.body.activites)},
+    
+    userID: ${request.session.user.id},
+    
+    date:${request.body.date},
+    
+    `);
+    activitiesModel.editDay(request.body.activities, request.session.user.id, request.body.date,  function (err, result) {
+        if (err) {
+            response.json({success: false});
         }
         else {
-            existingActivities.push(tempActivity);
+            if (request.body.entry) {
+                activitiesModel.editJournalEntry(request.body.entry, request.session.user.id, request.body.date, function(err, result) {
+                    if (err) {
+                        response.json({success: false});
+                    }
+                    else {
+                        response.json(result);
+                    }
+                });
+            }
+            else {
+                response.json(result);
+            }
         }
-    }
-    console.log(`newActivities: ${JSON.stringify(newActivities)}`);
-    console.log(`existingActivities: ${JSON.stringify(existingActivities)}`);
+    })
+}
 
-    activitiesModel.editDay(existingActivities, function (err, result) {
+function getActivityTypeId(request, response) {
+    console.log(`Request activity type id with name: ${request.query.name}`);
+    activitiesModel.getActivityTypeId(request.query.name, function (err, result) {
         if (err) {
             console.log(`ERROR: ${err}`);
-            response.status(500).send("Unable to edit day.");
+            response.json(err);
         }
         else {
-            activitiesModel.getDayId(request.session.user.id, request.body.date, function (err, result) {
-                if (err) {
-                    console.log(`ERROR: ${err}`);
-                    response.status(500).send("Unable to get day to add activities to.");
-                }
-                else {
-                    console.log(`day id result: ${JSON.stringify(result)}`);
-                    activitiesModel.addActivities(newActivities, request.session.user.id, result.id, function (err, result) {
-                        if (err) {
-                            console.log(`ERROR: ${err}`);
-                            response.status(500).send("Unable to add activities to day.");
-                        }
-                        else {
-                            response.json({success: true});
-                        }
-                    })
-                }
-            });
+            response.json({type_id: result.id});
         }
     });
 }
@@ -180,5 +182,6 @@ module.exports = {
     getJournalDay: getJournalDay,
     postPlan: postPlan,
     editDay: editDay,
-    postJournalEntry: postJournalEntry
+    postJournalEntry: postJournalEntry,
+    getActivityTypeId: getActivityTypeId
 };

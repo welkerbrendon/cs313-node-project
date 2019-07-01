@@ -17,6 +17,7 @@
     <script src="./javascript-helpers/day-to-edit.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="./header/header.js"></script>
+    <script src="javascript-helpers/handle-time-input.js"></script>
     
     <title>Home</title>
 </head>
@@ -36,9 +37,10 @@
         <div class="table-div" id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
             <p>
-                <button class="addRow" onclick="addRow('day-input')">Add Row</button>
-                <button class="deleteRow" onclick="deleteRow('day-input', 1)">Delete Row</button>
+                <button class="addRow" id="addRow" onclick="addRow('day-input')">Add Row</button>
+                <button class="deleteRow" id="deleteRow" onclick="deleteRow('day-input', 1)">Delete Row</button>
             </p>
+            <span id="error"></span>
             <table id="day-input" border=1 style="width:100%">
                 <tr id="table-headers">
                     <th>Start Time</th>
@@ -48,15 +50,15 @@
                 </tr>
                 <tr id="table-row">
                     <td id="start-time-column">
-                        <input type="time" class="without_ampm"  />
-                        <select id="am/pm" name="am/pm">
+                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="start-time">
+                        <select id="am/pm" name="start-time-am/pm">
                             <option value='AM'>AM</option>
                             <option value='PM'>PM</option>
                         </select>
                     </td>
                     <td id="end-time-column">
-                        <input type="time" class="without_ampm"  />
-                        <select id="am/pm" name="am/pm">
+                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="start-time">
+                        <select id="am/pm" name="end-time-am/pm">
                             <option value='AM'>AM</option>
                             <option value='PM'>PM</option>
                         </select>
@@ -72,8 +74,8 @@
                 </tr>
             </table>
             <p id="input-error"></p>
-            <button class="submit" onclick="submitPlan()">Submit</button>
-            <button class="clear" onclick="clearTable('day-input')">Clear</button>
+            <button class="submit" id="submit" onclick="submitPlan('false')">Submit</button>
+            <button class="clear" id ="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
         <p>
             <div id="time-period-selection">
@@ -83,7 +85,7 @@
                 <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
                 <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
                 <div id="time-input"></div>
-                <button onclick="getHistory(true)">Submit</button>
+                <button onclick="getHistory(true, false)">Submit</button>
                 <div class="table-div" id="result"></div>
             </div>
         </p>
@@ -91,7 +93,7 @@
             <div id="edit">
                 <p>
                     Day to edit: <input type="date" id="date-to-edit"><br>
-                    <button onclick="getPlanToEdit()">Edit</button>
+                    <button onclick="getDay(true, true)">Edit</button>
                 </p>
             </div>
             <p id="table-editors">

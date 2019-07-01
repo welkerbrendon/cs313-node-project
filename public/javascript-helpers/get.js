@@ -78,10 +78,10 @@ function getDateInputView() {
     document.getElementById("time-input").style.visibility="visible";
 }
 
-function getDateInputEdit() {
+function getDateInputEdit(plan) {
     console.log("date input edit");
 
-    clearTable("day-input");
+    clearTable("day-input", plan);
     resetDivs();
 
     document.getElementById("edit").style.visibility = "visible";
@@ -184,17 +184,19 @@ function clearTimeInput(){
     }    
 }
 
-function addRow(id) {
+function addRow(id, plan) {
     var table = document.getElementById(id);
 
     var newRow = globalTableRow.cloneNode(true);
     newRow.setAttribute("class", "new-row");
 
-    productiveTrue = newRow.children[2].children[0];
-    productiveFalse = newRow.children[2].children[2];
-    var newName = Math.random().toString();
-    productiveTrue.setAttribute("name", newName);
-    productiveFalse.setAttribute("name", newName);
+    if (!plan) {
+        productiveTrue = newRow.children[2].children[0];
+        productiveFalse = newRow.children[2].children[2];
+        var newName = Math.random().toString();
+        productiveTrue.setAttribute("name", newName);
+        productiveFalse.setAttribute("name", newName);
+    }
 
     for (var i = 0; i < newRow.children.length; i++) {
         try {
@@ -220,7 +222,7 @@ function deleteRow(id, minRows) {
     }
 }
 
-function clearTable(id) {
+function clearTable(id, plan) {
     var table = document.getElementById(id);
 
     while(table.childNodes.length > 1) {
@@ -230,7 +232,7 @@ function clearTable(id) {
     table.appendChild(globalTableHeaders.cloneNode(true));
     table.appendChild(globalTableRow.cloneNode(true));
 
-    getDayForm();
+    getDayForm(plan);
 }
 
 function addActivityTypes(activityTypeElement) {

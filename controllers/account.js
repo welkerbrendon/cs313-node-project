@@ -56,9 +56,13 @@ function logInUser(request, response) {
 function checkIfLoggedIn(request, response) {
     console.log("Checking if user is logged in.");
     console.log(`Session: ${JSON.stringify(request.session)}`);
-
-    if(request.session.user) {
-        response.json({loggedIn: true});
+    if (request.session) {
+        if(request.session.user) {
+            response.json({loggedIn: true});
+        }
+        else {
+            response.json({redirect: "log-in.html"});
+        }
     }
     else {
         response.json({redirect: "log-in.html"});

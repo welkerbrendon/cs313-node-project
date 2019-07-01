@@ -1,11 +1,11 @@
 function signOut() {
     console.log("Sign out");
-    $.post("/sign-out", function (err, result) {
-        if (err) {
-            console.log("Unable to log user out.");
+    $.post("/sign-out", function (result, textStatus) {
+        if (textStatus == "success") {
+            window.location.href = result.redirect;
         }
         else {
-            window.location.href = result.redirect;
+            console.log("Unable to log user out.");
         }
     });
 }

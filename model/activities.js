@@ -93,7 +93,7 @@ function addActivities(activities, userID, dayID, plan, callback) {
         activities.splice(activities.length - 1);
 
         var new_uuid = uuidv1();
-        var activitySQL = plan ? `INSERT INTO activity (id, user_id, day_id,
+        var activitySQL = plan == true ? `INSERT INTO activity (id, user_id, day_id,
             activity_type_id, start_time, 
             end_time, notes, 
             plan, last_updated, created_at)
@@ -129,7 +129,20 @@ function addActivities(activities, userID, dayID, plan, callback) {
 function getDay(date, userID, plan, callback) {
     console.log(`Received request to get date. Date: ${date}, userID: ${userID}`);
     
-    var sql = `SELECT activity.id, activity_type.type_name, 
+    var sql = plan == true ? `SELECT activity.id, activity_type.type_name, 
+                      activity.start_time, activity.end_time,
+                      activity.notes
+               FROM activity
+               INNER JOIN activity_type
+               ON activity_type.id=activity.activity_type_id
+               INNER JOIN day
+               ON day.id=activity.day_id
+               AND day.user_id=activity.user_id
+               WHERE activity.user_id='${userID}'
+               AND activity.plan='${plan}'
+               AND day.given_day='${date}'
+               ORDER BY activity.start_time ASC` :
+               `SELECT activity.id, activity_type.type_name, 
                       activity.start_time, activity.end_time, 
                       activity.productive, activity.notes,
                       je.entry
@@ -206,9 +219,17 @@ function editDay(request, userID, date, callback) {
     if (activity != null) {
         activityExists(activity.id, function (alreadyExists) {
             var sql;
-            if (alreadyExists && activity.id != "") {
+            if (alreadyExists && activity.id != "" && activity.id != null) {
                 console.log(`activity with id: ${activity.id} already exisits. Updating it now.`);
-                sql = `UPDATE activity
+                
+                sql = activity.plan == true ? `UPDATE activity
+                            SET activity_type_id='${activity.type_id}', 
+                                start_time='${activity.start_time}',
+                                end_time='${activity.end_time}',
+                                notes='${activity.notes}',
+                                last_updated=now()
+                            WHERE id='${activity.id}'` :
+                            `UPDATE activity
                             SET activity_type_id='${activity.type_id}', 
                                 start_time='${activity.start_time}',
                                 end_time='${activity.end_time}',
@@ -236,10 +257,20 @@ function editDay(request, userID, date, callback) {
                         console.log("not a duplicate.")
                         var new_uuid = uuidv1();
                         const dayID = `${userID}-${date}`;
-                        sql = `INSERT INTO activity (id, user_id, day_id,
+                        
+                        sql = activity.plan == true ? 
+                            `INSERT INTO activity (id, user_id, day_id,
                                                 activity_type_id, start_time, 
-                                                end_time, notes, productive, 
-                                                plan, last_updated, created_at)
+                                                end_time, notes, plan, 
+                                                last_updated, created_at)
+                            VALUES ('${new_uuid}', '${userID}', '${dayID}', 
+                                    '${activity.type_id}', '${activity.start_time}',
+                                    '${activity.end_time}', '${activity.notes}', 
+                                    '${activity.plan}', now(), now())` :
+                            `INSERT INTO activity (id, user_id, day_id,
+                                        activity_type_id, start_time, 
+                                        end_time, notes, productive, 
+                                        plan, last_updated, created_at)
                             VALUES ('${new_uuid}', '${userID}', '${dayID}', 
                                     '${activity.type_id}', '${activity.start_time}',
                                     '${activity.end_time}', '${activity.notes}', 
@@ -300,7 +331,17 @@ function activityExists(id, callback) {
 function duplicateActivity(activity, userID, date, callback) {
     console.log(`checking if received duplicate activity with given activity: ${JSON.stringify(activity)}`);
     
-    var sql = `SELECT id FROM activity
+    var sql = activity.plan == true ? 
+               `SELECT id FROM activity
+               WHERE activity_type_id='${activity.type_id}'
+               AND user_id='${userID}'
+               AND start_time='${activity.start_time}'
+               AND end_time='${activity.end_time}'
+               AND notes='${activity.notes}'
+               AND productive IS NULL
+               AND plan='${activity.plan}'
+               AND day_id='${userID + '-' + date}'` :
+               `SELECT id FROM activity
                WHERE activity_type_id='${activity.type_id}'
                AND user_id='${userID}'
                AND start_time='${activity.start_time}'

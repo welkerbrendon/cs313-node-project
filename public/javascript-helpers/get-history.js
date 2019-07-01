@@ -171,7 +171,7 @@ function displayResults(result, planner, edit) {
 
     if (edit) {
         var addRow = document.getElementById("addRow").cloneNode(true);
-        addRow.setAttribute("onclick", "addRow('results-table')");
+        addRow.setAttribute("onclick", `addRow('results-table', ${planner})`);
         div.appendChild(addRow);
 
         var deleteRow = document.getElementById("deleteRow").cloneNode(true);
@@ -202,6 +202,9 @@ function displayResults(result, planner, edit) {
         var singleActivity = activities[i];
         var tableRow = globalTableRow.cloneNode(true);
         tableRow.setAttribute("value", singleActivity.id);
+        if (edit) {
+            tableRow.setAttribute("name", "table-rows");
+        }
         var individualColumns = tableRow.children;
         for (var j = 0; j < individualColumns.length; j++) {
             var column = individualColumns[j];
@@ -211,6 +214,7 @@ function displayResults(result, planner, edit) {
                         id == "productive-column" ? singleActivity.productive :
                         id == "activity-type-column" ? singleActivity.type_name :
                         id == "notes-column" ? singleActivity.notes : null;
+            value = value == "undefined" ? "" : value
             if (edit) {
                 setInputElements(column, id, value, i);
             }
@@ -253,10 +257,10 @@ function displayResults(result, planner, edit) {
     if (edit) {
         var submit = document.getElementById("submit").cloneNode(true);
         if (planner) {
-            submit.setAttribute("onclick", `submitPlan('true', ${result.date})`);
+            submit.setAttribute("onclick", `submitPlan(true, ${result.date})`);
         }
         else {
-            submit.setAttribute("onclick", `submitJournal('true', ${result.date})`);
+            submit.setAttribute("onclick", `submitJournal(true, ${result.date})`);
         }
         div.appendChild(submit);
 

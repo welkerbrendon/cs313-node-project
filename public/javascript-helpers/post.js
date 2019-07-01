@@ -1,7 +1,5 @@
 function submitPlan(edit) {
-    edit = (edit == "true");
-
-    const day = getDay(edit);
+    const day = getDayForPosting(edit);
 
     if (day == null) {
         return;
@@ -10,7 +8,7 @@ function submitPlan(edit) {
     const activityIdList = edit ? getActivityIdList() : null;
     const startTimes = getStartTimes();
     const endTimes = getEndTimes();
-    const activityTypes = getActivityTypes();
+    const activityTypes = getActivityTypeValues();
     const notes = getNotes();
 
     console.log(`Day: ${day}`);
@@ -51,7 +49,7 @@ function submitPlan(edit) {
                     console.log(`Response: ${JSON.stringify(response)}`);
                     if(response.success) {
                         document.getElementById("date").value = null;
-                        clearTable("day-input");
+                        clearTable("day-input", true);
                         resetDivs();
                     }
                 });
@@ -61,7 +59,7 @@ function submitPlan(edit) {
                     console.log(`Response: ${JSON.stringify(response)}`);
                     if (response.success) {
                         document.getElementById("date").value = null;
-                        clearTable("results-table");
+                        clearTable("results-table", true);
                         resetDivs();
                     }
                 });
@@ -79,7 +77,7 @@ function submitPlan(edit) {
             console.log(`Response: ${JSON.stringify(response)}`);
             if(response.success) {
                 document.getElementById("date").value = null;
-                clearTable("day-input");
+                clearTable("day-input", true);
                 resetDivs();
             }
         });
@@ -89,14 +87,14 @@ function submitPlan(edit) {
             console.log(`Response: ${JSON.stringify(response)}`);
             if (response.success) {
                 document.getElementById("date").value = null;
-                clearTable("results-table");
+                clearTable("results-table", true);
                 resetDivs();
             }
         });
     }
 }
 
-function getDay(edit) {
+function getDayForPosting(edit) {
     const day = edit ? document.getElementById("date-to-edit").value : document.getElementById("date").value;
 
     if(!day) {
@@ -113,7 +111,7 @@ function getActivityIdList() {
     var temp = document.getElementsByName("table-rows");
     var activityIdList = Array();
     if (temp != null) {
-        for (var i = 1; i < temp.length; i++) {
+        for (var i = 0; i < temp.length; i++) {
             activityIdList.push(temp[i].getAttribute("value"));
         }
     }
@@ -164,7 +162,7 @@ function getProductiveValues() {
     return productive;
 }
 
-function getActivityTypes() {
+function getActivityTypeValues() {
     const activityTypeElements = document.getElementsByName("activity-type");
     var activityTypes = new Array();
     for (var i = 0; i < activityTypeElements.length; i++) {
@@ -187,9 +185,7 @@ function getNotes() {
 }
 
 function submitJournal(edit) {
-    edit = (edit == "true");
-
-    const day = getDay(edit);
+    const day = getDayForPosting(edit);
 
     if (day == null) {
         return;
@@ -200,7 +196,7 @@ function submitJournal(edit) {
     const startTimes = getStartTimes();
     const endTimes = getEndTimes();
     const productive = getProductiveValues();
-    const activityTypes = getActivityTypes();
+    const activityTypes = getActivityTypeValues();
     const notes = getNotes();
 
     console.log(`Day: ${day}`);
@@ -244,7 +240,7 @@ function submitJournal(edit) {
                     console.log(`Response: ${JSON.stringify(response)}`);
                     if(response.success) {
                         document.getElementById("date").value = null;
-                        clearTable("day-input");
+                        clearTable("day-input", false);
                         resetDivs();
                     }
                 });
@@ -254,7 +250,7 @@ function submitJournal(edit) {
                     console.log(`Response: ${JSON.stringify(response)}`);
                     if(response.success) {
                         document.getElementById("date").value = null;
-                        clearTable("results-table");
+                        clearTable("results-table", false);
                         resetDivs();
                     }
                 });
@@ -272,7 +268,7 @@ function submitJournal(edit) {
             console.log(`Response: ${JSON.stringify(response)}`);
             if(response.success) {
                 document.getElementById("date").value = null;
-                clearTable("day-input");
+                clearTable("day-input", false);
                 clearTextAreas();
                 resetDivs();
             }
@@ -283,7 +279,7 @@ function submitJournal(edit) {
             console.log(`Response: ${JSON.stringify(response)}`);
             if(response.success) {
                 document.getElementById("date").value = null;
-                clearTable("results-table");
+                clearTable("results-table", false);
                 clearTextAreas();
                 resetDivs();
             }

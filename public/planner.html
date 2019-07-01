@@ -32,7 +32,7 @@
     <div class="body">
         <button class="main" onclick="getDayForm(true)">Make Plan</button>
         <button class="main" onclick="getDateInputView()">View Plan</button>
-        <button class="main" onclick="getDateInputEdit()">Edit Plan</button>
+        <button class="main" onclick="getDateInputEdit(true)">Edit Plan</button>
         <p id="error"></p>
         <div class="table-div" id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
@@ -57,7 +57,7 @@
                         </select>
                     </td>
                     <td id="end-time-column">
-                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="start-time">
+                        <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="end-time">
                         <select id="am/pm" name="end-time-am/pm">
                             <option value='AM'>AM</option>
                             <option value='PM'>PM</option>
@@ -65,7 +65,7 @@
                     </td>
                     <td id="activity-type-column">
                         <select id="activity-type" name="activity-type">
-                            <option value='' selected disabled hidden>--Choose Activity Type--</option>
+                            <option value='' selected disabled hidden>--Choose Type--</option>
                         </select>
                     </td>
                     <td id="notes-column">
@@ -74,34 +74,25 @@
                 </tr>
             </table>
             <p id="input-error"></p>
-            <button class="submit" id="submit" onclick="submitPlan('false')">Submit</button>
+            <button class="submit" id="submit" onclick="submitPlan(false)">Submit</button>
             <button class="clear" id ="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
-        <p>
-            <div id="time-period-selection">
-                <input type="radio" name="time-period" onclick="clearTimeInput()" value="most-recent">Most Recent Day<br>
-                <input type="radio" name="time-period" onclick="day('time-input')" value="day">Selected Day<br>
-                <input type="radio" name="time-period" onclick="week()" value="week">Past Week<br>
-                <input type="radio" name="time-period" onclick="month()" value="month">Past Month<br>
-                <input type="radio" name="time-period" onclick="custom()" value="custom">Custom Time Period<br>
-                <div id="time-input"></div>
-                <button onclick="getHistory(true, false)">Submit</button>
-                <div class="table-div" id="result"></div>
-            </div>
-        </p>
-        <div id="parent-edit">
-            <div id="edit">
-                <p>
-                    Day to edit: <input type="date" id="date-to-edit"><br>
-                    <button onclick="getDay(true, true)">Edit</button>
-                </p>
-            </div>
-            <p id="table-editors">
+        <div id="time-input">
+            <label for="day">Select Day: </label>
+            <input type="date" id="day"><br>
+            <button onclick="getDay(true, false)">Submit</button>
+        </div>
+        <div id="edit">
+            <label for="date-to-edit">Day to edit: </label>
+            <input type="date" id="date-to-edit"><br>
+            <button onclick="getDay(true, true)">Edit</button>
+            <!-- <p id="table-editors">
                     <button onclick="addRow('day-edit')">Add Row</button>
                     <button id="delete-row">Delete Row</button>
                     <button onclick="clearTable('day-edit')">Clear Activities</button>
-            </p>
+            </p> -->
         </div>
+        <div id="result"></div>
     </div>
 </body>
 </html>

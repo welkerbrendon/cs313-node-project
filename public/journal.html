@@ -32,7 +32,7 @@
     <div class="body">
         <button class="main" onclick="getDayForm(false)">Report Day</button>
         <button class="main" onclick="getDateInputView()">View Report</button>
-        <button class="main" onclick="getDateInputEdit()">Edit Report</button>
+        <button class="main" onclick="getDateInputEdit(false)">Edit Report</button>
         <p id="error"></p>
         <div id="table-div">
             <p style="font-weight: bold">Date: <input type="date" name="date" id="date"><label for="date" id="date-error"></label></p>
@@ -48,7 +48,7 @@
                     <th>Activity Type</th>
                     <th>Notes</th>
                 </tr>
-                <tr id="table-row" name="table-rows">
+                <tr id="table-row">
                     <td id="start-time-column">
                         <input type="text" style="text-align: center" maxlength="5" size="5" oninput="handleCharacter(this)" onchange="handleInput(this)" placeholder="- - : - -" name="start-time">
                         <select id="am/pm" name="start-time-am/pm">
@@ -82,7 +82,7 @@
                 <textarea rows="8" cols="99999" style="width:100%" id="textarea"></textarea>
             </div>
             <p id="input-error"></p>
-            <button class="submit" id="submit" onclick="submitJournal('false')">Submit</button>
+            <button class="submit" id="submit" onclick="submitJournal(false)">Submit</button>
             <button class="clear" id="clear" onclick="clearTable('day-input')">Clear</button>
         </div>
         <div id="time-input">

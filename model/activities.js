@@ -221,8 +221,11 @@ function editDay(request, userID, date, callback) {
             var sql;
             if (alreadyExists && activity.id != "" && activity.id != null) {
                 console.log(`activity with id: ${activity.id} already exisits. Updating it now.`);
-                
-                sql = activity.plan == true ? `UPDATE activity
+                console.log(`
+                activity: ${JSON.stringify(activity)}
+                `);
+
+                sql = activity.plan == 'true' ? `UPDATE activity
                             SET activity_type_id='${activity.type_id}', 
                                 start_time='${activity.start_time}',
                                 end_time='${activity.end_time}',
@@ -258,7 +261,7 @@ function editDay(request, userID, date, callback) {
                         var new_uuid = uuidv1();
                         const dayID = `${userID}-${date}`;
                         
-                        sql = activity.plan == true ? 
+                        sql = activity.plan == 'true' ? 
                             `INSERT INTO activity (id, user_id, day_id,
                                                 activity_type_id, start_time, 
                                                 end_time, notes, plan, 
@@ -331,7 +334,7 @@ function activityExists(id, callback) {
 function duplicateActivity(activity, userID, date, callback) {
     console.log(`checking if received duplicate activity with given activity: ${JSON.stringify(activity)}`);
     
-    var sql = activity.plan == true ? 
+    var sql = activity.plan == 'true' ? 
                `SELECT id FROM activity
                WHERE activity_type_id='${activity.type_id}'
                AND user_id='${userID}'

@@ -23,11 +23,11 @@ function postDayOfActivities(requestJSON, userID, plan, callback) {
     console.log(`activities model postDayOfActivities received: ${JSON.stringify(requestJSON)}`);
     
     dayAlreadyExists(userID, requestJSON.date, function (alreadyExists) {
+        const dayID = `${userID}-${requestJSON.date}`;
         if (alreadyExists) {
             addActivities(requestJSON.activities, userID, dayID, plan, callback);
         }
         else {
-            const dayID = `${userID}-${requestJSON.date}`;
             const daySQL = `INSERT INTO day (id, given_day, user_id, last_updated, created_at)
                         VALUES ('${dayID}', '${requestJSON.date}', '${userID}', now(), now())`;
 
